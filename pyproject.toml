@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "ecertify-cert-gen-poc"
+version = "0.1.0"
+description = "Proof-of-concept for the certificate generation feature for DOST V's e-Certify app."
+authors = ["Jay Mandane <jvergel.mandane@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+Flask-Migrate = "^4.0.7"
+CairoSVG = "^2.7.1"
+qrcode = "^7.4.2"
+python-dotenv = "^1.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
