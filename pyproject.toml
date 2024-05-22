@@ -12,6 +12,7 @@ Flask-Migrate = "^4.0.7"
 CairoSVG = "^2.7.1"
 qrcode = "^7.4.2"
 python-dotenv = "^1.0.1"
+mysqlclient = "^2.2.4"
 
 
 [build-system]
