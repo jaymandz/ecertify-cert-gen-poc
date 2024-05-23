@@ -7,7 +7,7 @@ Create Date: 2024-05-23 10:50:06.087380
 """
 from alembic import op
 import sqlalchemy as sa
-
+from sqlalchemy.dialects import mysql
 
 # revision identifiers, used by Alembic.
 revision = 'fbedc734aace'
@@ -21,7 +21,7 @@ def upgrade():
     op.create_table('template',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=255), nullable=True),
-    sa.Column('content', sa.Text(), nullable=True),
+    sa.Column('content', mysql.LONGTEXT(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###
