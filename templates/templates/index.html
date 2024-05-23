@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="mb-4">
+    <div class="tooltip tooltip-right" data-tip="Create a template">
+        <a class="btn btn-square" role="button"
+          href="{{ url_for('templates.create') }}">
+            {% include 'heroicons/plus.svg' %}
+        </a>
+    </div>
+    <div class="tooltip tooltip-right" data-tip="Reload page">
+        <button class="btn btn-square" @click="location.reload()">
+            {% include 'heroicons/arrow-path.svg' %}
+        </button>
+    </div>
+</div>
+
+{% if collection|length == 0 %}
+<div class="alert" role="alert">
+    There are no templates yet.
+</div>
+{% else %}
+<form action="{{ url_for('templates.index') }}"
+  class="flex gap-x-2 items-center mb-2">
+    <input class="input input-bordered w-full" name="q"
+      placeholder="Search template names here." type="text">
+    <button class="btn btn-square" type="submit">
+        {% include 'heroicons/magnifying-glass.svg' %}
+    </button>
+</form>
+
+<ul class="menu bg-slate-100 overflow-y-auto rounded-box"
+  style="height: calc(100vh - 216px)">
+    {% for item in collection %}
+    <li>
+        <a href="{{ url_for('templates.show', id=item) }}">
+            {{ item }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endblock content %}
