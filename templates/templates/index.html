@@ -15,13 +15,13 @@
     </div>
 </div>
 
-{% if collection|length == 0 %}
+{% if collection.items|length == 0 %}
 <div class="alert" role="alert">
     There are no templates yet.
 </div>
 {% else %}
 <form action="{{ url_for('templates.index') }}"
-  class="flex gap-x-2 items-center mb-2">
+  class="flex gap-x-1 items-center mb-2">
     <input class="input input-bordered w-full" name="q"
       placeholder="Search template names here." type="text">
     <button class="btn btn-square" type="submit">
@@ -29,15 +29,38 @@
     </button>
 </form>
 
-<ul class="menu bg-slate-100 overflow-y-auto rounded-box"
-  style="height: calc(100vh - 216px)">
-    {% for item in collection %}
+<ul class="bg-slate-100 mb-4 menu overflow-y-auto rounded-box"
+  style="height: calc(100vh - 280px)">
+    {% for item in collection.items %}
     <li>
-        <a href="{{ url_for('templates.show', id=item) }}">
-            {{ item }}
+        <a href="{{ url_for('templates.show', id=item.id) }}">
+            {{ item.name }}
         </a>
     </li>
     {% endfor %}
 </ul>
+
+<div class="flex justify-center">
+    <div class="join">
+        <a class="btn join-item" role="button"
+          {% if collection.prev_num %}
+          href="{{ url_for('templates.index', page=collection.prev_num)}}"
+          {% else %}disabled{% endif %}>
+            {% include 'heroicons/chevron-double-left.svg' %}
+        </a>
+        {% for p in collection.iter_pages() %}
+        <a class="btn join-item" role="button"
+          {% if collection.page != p %}
+          href="{{ url_for('templates.index', page=p)}}"
+          {% else %}disabled{% endif %}>{{ p }}</a>
+        {% endfor %}
+        <a class="btn join-item" role="button"
+          {% if collection.next_num %}
+          href="{{ url_for('templates.index', page=collection.next_num)}}"
+          {% else %}disabled{% endif %}>
+            {% include 'heroicons/chevron-double-right.svg' %}
+        </a>
+    </div>
+</div>
 {% endif %}
 {% endblock content %}

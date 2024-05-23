@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="mb-4">
+    <div class="tooltip tooltip-right" data-tip="To templates list">
+        <a class="btn btn-square" role="button"
+          href="{{ url_for('templates.index') }}">
+            {% include 'heroicons/arrow-uturn-left.svg' %}
+        </a>
+    </div>
+    <div class="tooltip tooltip-right" data-tip="Download">
+        <button class="btn btn-square">
+            {% include 'heroicons/arrow-down-tray.svg' %}
+        </button>
+    </div>
+    <div class="tooltip tooltip-right" data-tip="Edit">
+        <a class="btn btn-square" role="button"
+          href="{{ url_for('templates.edit', id=template.id) }}">
+            {% include 'heroicons/pencil-square.svg' %}
+        </a>
+    </div>
+    <div class="tooltip tooltip-right" data-tip="Delete">
+        <button class="btn btn-square" @click="confirmDeleteModal.showModal()">
+            {% include 'heroicons/trash.svg' %}
+        </button>
+    </div>
+</div>
+
+<dialog class="modal" id="confirmDeleteModal">
+<div class="modal-box">
+    <p>
+        Are you sure you want to delete this template? This cannot be undone.
+    </p>
+    <div class="modal-action">
+        <button class="btn" @click="">
+            OK
+        </button>
+        <form method="dialog">
+            <button class="btn">Cancel</button>
+        </form>
+    </div>
+</div>
+<form class="modal-backdrop" method="dialog">
+    <button>Close</button>
+</form>
+</dialog>
+{% endblock content %}

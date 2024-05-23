@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, redirect, render_template, request, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
-from models import Template
+from models import Template, db
 
 templates_blueprint = Blueprint('templates', __name__)
 
@@ -10,7 +10,7 @@ def index():
     return render_template(
         'templates/index.html',
         title='Templates',
-        collection=[],
+        collection=db.paginate(db.select(Template)),
     )
 
 @templates_blueprint.get('/create')
@@ -22,20 +22,32 @@ def create():
 
 @templates_blueprint.post('/')
 def store():
-    return request.form['name']
+    t = Template()
+    t.name = request.form['name']
+    t.content = request.form['content']
 
-@templates_blueprint.get('/<id>')
+    db.session.add(t)
+    db.session.commit()
+
+    return redirect(url_for('templates.index'))
+
+@templates_blueprint.get('/<int:id>')
 def show(id):
-    return {}
+    t = db.get_or_404(Template, id)
+    return render_template(
+        'templates/show.html',
+        title=f'Template "{t.name}"',
+        template=t,
+    )
 
-@templates_blueprint.get('/<id>/edit')
+@templates_blueprint.get('/<int:id>/edit')
 def edit(id):
     return {}
 
-@templates_blueprint.patch('/<id>')
+@templates_blueprint.patch('/<int:id>')
 def update(id):
     return {}
 
-@templates_blueprint.delete('/<id>')
+@templates_blueprint.delete('/<int:id>')
 def delete(id):
     return {}
