@@ -1,4 +1,7 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request
+from flask_sqlalchemy import SQLAlchemy
+
+from models import Template
 
 templates_blueprint = Blueprint('templates', __name__)
 
@@ -19,7 +22,7 @@ def create():
 
 @templates_blueprint.post('/')
 def store():
-    return {}
+    return request.form['name']
 
 @templates_blueprint.get('/<id>')
 def show(id):

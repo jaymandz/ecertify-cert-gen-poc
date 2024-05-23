@@ -1,12 +1,11 @@
 from os import getenv
 
+from dotenv import load_dotenv
 from flask import Flask, render_template
-from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
-from dotenv import load_dotenv
-
-from blueprints.templates import templates_blueprint
+from blueprints.templates import Template, templates_blueprint
+from models import db
 
 load_dotenv()
 
@@ -18,13 +17,8 @@ application.register_blueprint(
     url_prefix='/templates',
 )
 
-db = SQLAlchemy(application)
+db.init_app(application)
 migrate = Migrate(application, db)
-
-class Template(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255))
-    content = db.Column(db.Text())
 
 @application.get('/')
 def index():

@@ -17,9 +17,9 @@
 
 <form action="{{ url_for('templates.store') }}" class="grid gap-y-2"
   id="templateForm" method="post">
-    <input required class="input input-bordered" placeholder="Template name"
-      type="text">
+    <input required class="input input-bordered" name="name"
+      placeholder="Template name" type="text">
     <textarea required class="resize-none textarea textarea-bordered"
-      placeholder="Contents (SVG XML)" rows="10"></textarea>
+      name="content" placeholder="Contents (SVG XML)" rows="10"></textarea>
 </form>
 {% endblock content %}
