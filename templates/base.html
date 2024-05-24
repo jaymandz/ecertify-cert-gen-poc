@@ -13,16 +13,16 @@
 
 {% block scripts %}{% endblock %}
 
-<div class="navbar bg-lime-300 mb-4">
+<div class="navbar bg-primary mb-4">
 <div class="flex-1">
     <a class="btn btn-ghost text-lg">ecPOC</a>
 </div>
 <div class="flex-none">
 <div class="dropdown dropdown-end">
     <div class="btn btn-ghost" role="button" tabindex="0">
-        Theme
+        Theme {% include 'heroicons/chevron-down.svg' %}
     </div>
-    <ul class="bg-lime-100 dropdown-content menu rounded-box z-[1]"
+    <ul class="bg-base-200 dropdown-content menu rounded-box z-[1]"
       tabindex="0">
         <li>
             <input aria-label="Default" class="btn btn-ghost theme-controller"
