@@ -26,6 +26,16 @@
     </div>
 </div>
 
+<div class="card card-bordered shadow-lg sm:card-side"
+  style="max-height: calc(100vh - 160px)">
+    <figure class="bg-lime-50 *:h-full">
+        {{ template.content|safe }}
+    </figure>
+    <div class="card-body">
+        <p class="card-title">{{ template.name }}</p>
+    </div>
+</div>
+
 <dialog class="modal" id="confirmDeleteModal">
 <div class="modal-box">
     <p>
