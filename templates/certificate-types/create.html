@@ -1,1 +1,88 @@
 {% extends 'base.html' %}
+
+{% block content %}
+<div class="mb-4">
+    <div class="tooltip tooltip-right" data-tip="To certificate types list">
+        <a class="btn btn-square" role="button"
+          href="{{ url_for('certificate_types.index') }}">
+            {% include 'heroicons/arrow-uturn-left.svg' %}
+        </a>
+    </div>
+    <div class="tooltip tooltip-right" data-tip="Save">
+        <button class="btn btn-square" form="certificateTypeForm"
+          type="submit">
+            {% include 'heroicons/check.svg' %}
+        </button>
+    </div>
+</div>
+
+<form action="{{ url_for('certificate_types.store') }}" class="grid gap-y-2"
+  id="certificateTypeForm" method="post">
+    <input required class="input input-bordered" name="name"
+      placeholder="Certificate type name" type="text">
+    <div class="flex mb-2">
+        <button class="btn" type="button" @click="addField">
+            {% include 'heroicons/plus.svg' %}
+            Add a field
+        </button>
+    </div>
+</form>
+
+<div class="bg-base-300 overflow-y-auto rounded-box"
+  style="height: calc(100vh - 272px)">
+<ul class="bg-base-300 menu rounded-box" x-data="{ rows }">
+<template x-for="(row, index) in rows">
+<li>
+<div class="grid grid-cols-1 grid-rows-2 sm:grid-rows-1">
+    <input form="certificateTypeForm" name="field-ids" type="hidden" value="0">
+    <input required class="input" form="certificateTypeForm"
+      name="field-descriptions" placeholder="Description" type="text">
+    <div class="flex items-center space-x-2">
+        <select class="select w-full" form="certificateTypeForm"
+          name="field-value-types">
+            <option value="text">Text</option>
+            <option value="date">Date</option>
+        </select>
+        <span class="tooltip tooltip-left" data-tip="Required?">
+            <input class="toggle" form="certificateTypeForm"
+              name="field-required-flags" type="checkbox" value="true">
+        </span>
+        <button class="btn btn-square" :disabled="rows.length == 1"
+          @click="removeField(index)">
+            {% include 'heroicons/x-mark.svg' %}
+        </button>
+    </div>
+</div>
+</li>
+</template>
+</ul>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script type="text/javascript">
+var rows = Alpine.reactive([
+    {
+        id: 0,
+        description: '',
+        value_type: 'text',
+        is_required: '',
+    },
+])
+
+function addField(event)
+{
+    rows.push({
+        id: 0,
+        description: '',
+        value_type: 'text',
+        is_required: '',
+    })
+}
+
+function removeField(index)
+{
+    rows.splice(index, 1)
+}
+</script>
+{% endblock scripts %}
