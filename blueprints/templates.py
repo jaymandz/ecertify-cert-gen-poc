@@ -42,11 +42,22 @@ def show(id):
 
 @templates_blueprint.get('/<int:id>/edit')
 def edit(id):
-    return {}
+    t = db.get_or_404(Template, id)
+    return render_template(
+        'templates/edit.html',
+        title=f'Edit template "{t.name}"',
+        template=t,
+    )
 
-@templates_blueprint.patch('/<int:id>')
+@templates_blueprint.post('/<int:id>')
 def update(id):
-    return {}
+    t = db.get_or_404(Template, id)
+    t.name = request.form['name']
+    t.content = request.form['content']
+
+    db.session.commit()
+
+    return redirect(url_for('templates.show', id=id))
 
 @templates_blueprint.delete('/<int:id>')
 def delete(id):

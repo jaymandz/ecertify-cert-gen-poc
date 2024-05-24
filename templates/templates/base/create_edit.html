@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="mb-4">
+    <div class="tooltip tooltip-right" data-tip="To templates list">
+        <a class="btn btn-square" role="button" href="{{ topUrl }}">
+            {% include 'heroicons/arrow-uturn-left.svg' %}
+        </a>
+    </div>
+    <div class="tooltip tooltip-right" data-tip="Save">
+        <button class="btn btn-square" form="templateForm" type="submit">
+            {% include 'heroicons/check.svg' %}
+        </button>
+    </div>
+</div>
+
+<form action="{{ formActionUrl }}" class="grid gap-y-2" id="templateForm"
+  method="post">
+    <input required class="input input-bordered" name="name"
+      placeholder="Template name" type="text" value="{{ tNameValue or '' }}">
+    <textarea required class="resize-none textarea textarea-bordered"
+      name="content" placeholder="Contents (SVG XML)"
+      rows="10">{{ tContentValue or '' }}</textarea>
+</form>
+{% endblock content %}
