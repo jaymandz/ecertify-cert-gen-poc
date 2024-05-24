@@ -52,8 +52,9 @@
     </div>
 </div>
 
-<ul class="bg-base-300 mb-4 menu overflow-y-auto rounded-box"
+<div class="bg-base-300 mb-4 overflow-y-auto rounded-box"
   style="height: calc(100vh - 280px)">
+<ul class="bg-base-300 menu rounded-box">
     {% for item in collection.items %}
     <li>
         <a href="{{ url_for('certificate_types.show', id=item.id) }}">
@@ -62,5 +63,6 @@
     </li>
     {% endfor %}
 </ul>
+</div>
 {% endif %}
 {% endblock content %}
