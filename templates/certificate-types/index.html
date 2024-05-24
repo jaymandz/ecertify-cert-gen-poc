@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="mb-4">
+    <div class="tooltip tooltip-right" data-tip="Create a certificate type">
+        <a class="btn btn-square" role="button"
+          href="{{ url_for('certificate_types.create') }}">
+            {% include 'heroicons/plus.svg' %}
+        </a>
+    </div>
+    <div class="tooltip tooltip-right" data-tip="Reload page">
+        <button class="btn btn-square" @click="location.reload()">
+            {% include 'heroicons/arrow-path.svg' %}
+        </button>
+    </div>
+</div>
+{% endblock content %}

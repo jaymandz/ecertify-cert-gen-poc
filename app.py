@@ -4,7 +4,8 @@ from dotenv import load_dotenv
 from flask import Flask, render_template
 from flask_migrate import Migrate
 
-from blueprints.templates import Template, templates_blueprint
+from blueprints.certificate_types import certificate_types_blueprint
+from blueprints.templates import templates_blueprint
 from models import db
 
 load_dotenv()
@@ -15,6 +16,10 @@ application.config['SQLALCHEMY_DATABASE_URI'] = getenv('DATABASE_URI')
 application.register_blueprint(
     templates_blueprint,
     url_prefix='/templates',
+)
+application.register_blueprint(
+    certificate_types_blueprint,
+    url_prefix='/certificate-types',
 )
 
 db.init_app(application)
