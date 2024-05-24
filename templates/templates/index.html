@@ -21,7 +21,7 @@
 </div>
 {% else %}
 <form action="{{ url_for('templates.index') }}"
-  class="flex gap-x-1 items-center mb-2">
+  class="flex gap-x-1 items-center mb-4">
     <input class="input input-bordered w-full" name="q"
       placeholder="Search template names here." type="text">
     <button class="btn btn-square" type="submit">
@@ -29,18 +29,7 @@
     </button>
 </form>
 
-<ul class="bg-slate-100 mb-4 menu overflow-y-auto rounded-box"
-  style="height: calc(100vh - 280px)">
-    {% for item in collection.items %}
-    <li>
-        <a href="{{ url_for('templates.show', id=item.id) }}">
-            {{ item.name }}
-        </a>
-    </li>
-    {% endfor %}
-</ul>
-
-<div class="flex justify-center">
+<div class="flex justify-center mb-2">
     <div class="join">
         <a class="btn join-item" role="button"
           {% if collection.prev_num %}
@@ -62,5 +51,16 @@
         </a>
     </div>
 </div>
+
+<ul class="bg-slate-100 mb-4 menu overflow-y-auto rounded-box"
+  style="height: calc(100vh - 280px)">
+    {% for item in collection.items %}
+    <li>
+        <a href="{{ url_for('templates.show', id=item.id) }}">
+            {{ item.name }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
 {% endif %}
 {% endblock content %}
