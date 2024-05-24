@@ -14,7 +14,38 @@
 {% block scripts %}{% endblock %}
 
 <div class="navbar bg-lime-300 mb-4">
+<div class="flex-1">
     <a class="btn btn-ghost text-lg">ecPOC</a>
+</div>
+<div class="flex-none">
+<div class="dropdown dropdown-end dropdown-hover">
+    <div class="btn btn-ghost" role="button">
+        Theme
+    </div>
+    <ul class="bg-lime-100 dropdown-content menu rounded-box z-[1]">
+        <li>
+            <input aria-label="Default" class="btn btn-ghost theme-controller"
+              name="theme-dropdown" type="radio" value="default">
+        </li>
+        <li>
+            <input aria-label="Light" class="btn btn-ghost theme-controller"
+              name="theme-dropdown" type="radio" value="light">
+        </li>
+        <li>
+            <input aria-label="Dark" class="btn btn-ghost theme-controller"
+              name="theme-dropdown" type="radio" value="dark">
+        </li>
+        <li>
+            <input aria-label="Retro" class="btn btn-ghost theme-controller"
+              name="theme-dropdown" type="radio" value="retro">
+        </li>
+        <li>
+            <input aria-label="Valentine" class="btn btn-ghost theme-controller"
+              name="theme-dropdown" type="radio" value="valentine">
+        </li>
+    </ul>
+</div>
+</div>
 </div>
 
 <div class="mx-auto px-4">
