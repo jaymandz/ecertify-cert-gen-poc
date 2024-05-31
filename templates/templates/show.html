@@ -2,9 +2,9 @@
 
 {% block content %}
 <div class="mb-4">
-    <div class="tooltip tooltip-right" data-tip="To templates list">
+    <div class="tooltip tooltip-right" data-tip="To certificate type">
         <a class="btn btn-square" role="button"
-          href="{{ url_for('templates.index') }}">
+          href="{{ url_for('certificate_types.show', id=template.certificate_type) }}">
             {% include 'heroicons/arrow-uturn-left.svg' %}
         </a>
     </div>
