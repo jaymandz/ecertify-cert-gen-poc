@@ -13,6 +13,9 @@ class CertificateType(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255))
 
+    templates = db.relationship('Template')
+    fields = db.relationship('CertificateTypeField')
+
 class CertificateTypeField(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     certificate_type = db.Column(db.ForeignKey(CertificateType.id))
