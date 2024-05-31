@@ -34,6 +34,7 @@ def store():
     for index, id in enumerate(field_ids):
         if id == 0:
             f = CertificateTypeField()
+            f.certificate_type = t.id
             f.description = field_descriptions[index]
             f.value_type = field_value_types[index]
 
@@ -43,6 +44,7 @@ def store():
             db.session.add(f)
         else:
             f = db.get_or_404(CertificateTypeField, id)
+            f.certificate_type = t.id
             f.description = field_descriptions[index]
             f.value_type = field_value_types[index]
 
@@ -54,5 +56,14 @@ def store():
 
 @certificate_types_blueprint.get('/<int:id>')
 def show(id):
+    t = db.get_or_404(CertificateType, id)
+    return render_template(
+        'certificate-types/show.html',
+        title=f'Certificate type "{t.name}"',
+        certificate_type=t,
+    )
+
+@certificate_types_blueprint.get('/<int:id>/edit')
+def edit(id):
     t = db.get_or_404(CertificateType, id)
     return 'Under construction'

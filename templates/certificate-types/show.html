@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="mb-4">
+    <div class="tooltip tooltip-right" data-tip="To certificate types list">
+        <a class="btn btn-square" role="button"
+          href="{{ url_for('certificate_types.index') }}">
+            {% include 'heroicons/arrow-uturn-left.svg' %}
+        </a>
+    </div>
+    <div class="tooltip tooltip-right" data-tip="Add a template">
+        <a class="btn btn-square" role="button"
+          href="{{ url_for('templates.create', certificate_type=certificate_type.id) }}">
+            {% include 'heroicons/plus-circle.svg' %}
+        </a>
+    </div>
+    <div class="tooltip tooltip-right" data-tip="Edit">
+        <a class="btn btn-square" role="button"
+          href="{{ url_for('certificate_types.edit', id=certificate_type.id) }}">
+            {% include 'heroicons/pencil-square.svg' %}
+        </a>
+    </div>
+    <div class="tooltip tooltip-right" data-tip="Delete">
+        <button class="btn btn-square" @click="confirmDeleteModal.showModal()">
+            {% include 'heroicons/trash.svg' %}
+        </button>
+    </div>
+</div>
+
+<div class="card card-compact mb-4 shadow-lg">
+<div class="card-body">
+    <h2 class="card-title">{{ certificate_type.name }}</h2>
+    <p class="flex items-center space-x-1">
+        <span>{{ certificate_type.fields|length }} fields, tap</span>
+        {% include 'heroicons/pencil-square.svg' %}
+        <span>above to view them.</span>
+    </p>
+    <p>{{ certificate_type.templates|length }} templates listed below.</p>
+</div>
+</div>
+
+<div class="bg-base-300 mb-4 overflow-y-auto rounded-box"
+  style="height: calc(100vh - 296px)">
+<ul class="bg-base-300 menu rounded-box">
+    {% for template in certificate_type.templates %}
+    <li>
+        <a href="{{ url_for('templates.show', id=template.id) }}">
+            {{ template.name }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+
+{% endblock scripts %}
