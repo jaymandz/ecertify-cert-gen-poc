@@ -1,7 +1,7 @@
-from flask import Blueprint, redirect, render_template, request, url_for, jsonify
+from flask import Blueprint, redirect, render_template, request, url_for
 from flask_sqlalchemy import SQLAlchemy
 
-from models import Template, db
+from models import CertificateType, Template, db
 
 templates_blueprint = Blueprint('templates', __name__)
 
@@ -15,21 +15,24 @@ def index():
 
 @templates_blueprint.get('/create')
 def create():
+    t = db.get_or_404(CertificateType, request.args.get('certificate_type'))
     return render_template(
         'templates/create.html',
         title='Create a template',
+        certificate_type=t,
     )
 
 @templates_blueprint.post('/')
 def store():
     t = Template()
+    t.certificate_type = request.form['certificate_type']
     t.name = request.form['name']
     t.content = request.form['content']
 
     db.session.add(t)
     db.session.commit()
 
-    return redirect(url_for('templates.index'))
+    return redirect(url_for('certificate_types.show', id=t.certificate_type))
 
 @templates_blueprint.get('/<int:id>')
 def show(id):
