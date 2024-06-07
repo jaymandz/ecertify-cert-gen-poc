@@ -5,14 +5,6 @@ from models import CertificateType, Template, db
 
 templates_blueprint = Blueprint('templates', __name__)
 
-@templates_blueprint.get('/')
-def index():
-    return render_template(
-        'templates/index.html',
-        title='Templates',
-        collection=db.paginate(db.select(Template)),
-    )
-
 @templates_blueprint.get('/create')
 def create():
     t = db.get_or_404(CertificateType, request.args.get('certificate_type'))
