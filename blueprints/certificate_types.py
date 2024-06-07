@@ -54,6 +54,7 @@ def store():
     t.name = request.form['name']
 
     db.session.add(t)
+    db.session.commit()
 
     save_fields(t)
     
