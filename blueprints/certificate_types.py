@@ -4,6 +4,35 @@ from models import CertificateType, CertificateTypeField, db
 
 certificate_types_blueprint = Blueprint('certificate_types', __name__)
 
+def save_fields(t):
+    field_ids = [ int(id) for id in request.form.getlist('field-ids') ]
+    field_descriptions = request.form.getlist('field-descriptions')
+    field_value_types = request.form.getlist('field-value-types')
+    field_required_flags = request.form.getlist('field-required-flags')
+    field_statuses = request.form.getlist('field-statuses')
+
+    for index, id in enumerate(field_ids):
+        if field_statuses[index] == 'to-add':
+            f = CertificateTypeField()
+            f.certificate_type = t.id
+            f.description = field_descriptions[index]
+            f.value_type = field_value_types[index]
+
+            try: f.is_required = field_required_flags[0] == true
+            except IndexError: f.is_required = False
+
+            db.session.add(f)
+        elif field_statuses[index] == 'to-edit':
+            f = db.get_or_404(CertificateTypeField, id)
+            f.certificate_type = t.id
+            f.description = field_descriptions[index]
+            f.value_type = field_value_types[index]
+
+            try: f.is_required = field_required_flags[0] == true
+            except IndexError: f.is_required = False
+        elif field_statuses[index] == 'to-delete':
+            db.session.delete(db.get_or_404(CertificateTypeField, id))
+
 @certificate_types_blueprint.get('/')
 def index():
     return render_template(
@@ -26,30 +55,7 @@ def store():
 
     db.session.add(t)
 
-    field_ids = [ int(id) for id in request.form.getlist('field-ids') ]
-    field_descriptions = request.form.getlist('field-descriptions')
-    field_value_types = request.form.getlist('field-value-types')
-    field_required_flags = request.form.getlist('field-required-flags')
-
-    for index, id in enumerate(field_ids):
-        if id == 0:
-            f = CertificateTypeField()
-            f.certificate_type = t.id
-            f.description = field_descriptions[index]
-            f.value_type = field_value_types[index]
-
-            try: f.is_required = field_required_flags[0] == true
-            except IndexError: f.is_required = False
-
-            db.session.add(f)
-        else:
-            f = db.get_or_404(CertificateTypeField, id)
-            f.certificate_type = t.id
-            f.description = field_descriptions[index]
-            f.value_type = field_value_types[index]
-
-            try: f.is_required = field_required_flags[0] == true
-            except IndexError: f.is_required = False
+    save_fields(t)
     
     db.session.commit()
     return redirect(url_for('certificate_types.index'))
@@ -66,4 +72,18 @@ def show(id):
 @certificate_types_blueprint.get('/<int:id>/edit')
 def edit(id):
     t = db.get_or_404(CertificateType, id)
-    return 'Under construction'
+    return render_template(
+        'certificate-types/edit.html',
+        title=f'Edit certificate type "{t.name}"',
+        certificate_type=t,
+    )
+
+@certificate_types_blueprint.post('/<int:id>')
+def update(id):
+    t = db.get_or_404(CertificateType, id)
+    t.name = request.form['name']
+
+    save_fields(t)
+
+    db.session.commit()
+    return redirect(url_for('certificate_types.show', id=id))
