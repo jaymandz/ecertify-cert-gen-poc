@@ -88,3 +88,9 @@ def update(id):
 
     db.session.commit()
     return redirect(url_for('certificate_types.show', id=id))
+
+@certificate_types_blueprint.post('/<int:id>/delete')
+def delete(id):
+    db.session.delete(db.get_or_404(CertificateType, id))
+    db.session.commit()
+    return redirect(url_for('certificate_types.index'))
