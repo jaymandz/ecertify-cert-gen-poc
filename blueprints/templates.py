@@ -62,6 +62,9 @@ def update(id):
 
     return redirect(url_for('templates.show', id=id))
 
-@templates_blueprint.delete('/<int:id>')
+@templates_blueprint.post('/<int:id>/delete')
 def delete(id):
-    return {}
+    t = db.get_or_404(Template, id)
+    db.session.delete(t)
+    db.session.commit()
+    return redirect(url_for('certificate_types.show', id=t.certificate_type))
