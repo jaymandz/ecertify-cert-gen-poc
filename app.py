@@ -5,6 +5,7 @@ from flask import Flask, render_template
 from flask_migrate import Migrate
 
 from blueprints.certificate_types import certificate_types_blueprint
+from blueprints.certificates import certificates_blueprint
 from blueprints.templates import templates_blueprint
 from models import db
 
@@ -14,12 +15,16 @@ application = Flask(__name__)
 application.config['SQLALCHEMY_DATABASE_URI'] = getenv('DATABASE_URI')
 
 application.register_blueprint(
-    templates_blueprint,
-    url_prefix='/templates',
-)
-application.register_blueprint(
     certificate_types_blueprint,
     url_prefix='/certificate-types',
+)
+application.register_blueprint(
+    certificates_blueprint,
+    url_prefix='/certificates',
+)
+application.register_blueprint(
+    templates_blueprint,
+    url_prefix='/templates',
 )
 
 db.init_app(application)
