@@ -15,37 +15,38 @@
     </div>
 </div>
 
-{% if collection.total == 0 %}
-<div class="alert" role="alert">
-    There are no certificate types yet.
-</div>
-{% else %}
 <form action="{{ url_for('certificate_types.index') }}"
   class="flex gap-x-1 items-center mb-4">
     <input class="input input-bordered w-full" name="q"
-      placeholder="Search certificate type names here." type="text">
+      placeholder="Search certificate type names here." type="text"
+      value="{{ request.args.get('q', '')}}">
     <button class="btn btn-square" type="submit">
         {% include 'heroicons/magnifying-glass.svg' %}
     </button>
 </form>
 
+{% if table_count == 0 %}
+<div class="alert" role="alert">
+    There are no certificate types yet.
+</div>
+{% else %}
 <div class="flex justify-center mb-2">
     <div class="join">
         <a class="btn join-item" role="button"
           {% if collection.prev_num %}
-          href="{{ url_for('certificate_types.index', page=collection.prev_num)}}"
+          href="{{ url_for('certificate_types.index', page=collection.prev_num, per_page=request.args.get('per_page'), q=request.args.get('q', ''))}}"
           {% else %}disabled{% endif %}>
             {% include 'heroicons/chevron-double-left.svg' %}
         </a>
-        {% for p in collection.iter_pages() %}
+        {% for p in collection.iter_pages() if p %}
         <a class="btn join-item" role="button"
           {% if collection.page != p %}
-          href="{{ url_for('certificate_types.index', page=p)}}"
+          href="{{ url_for('certificate_types.index', page=p, per_page=request.args.get('per_page'), q=request.args.get('q', ''))}}"
           {% else %}disabled{% endif %}>{{ p }}</a>
         {% endfor %}
         <a class="btn join-item" role="button"
           {% if collection.next_num %}
-          href="{{ url_for('certificate_types.index', page=collection.next_num)}}"
+          href="{{ url_for('certificate_types.index', page=collection.next_num, per_page=request.args.get('per_page'), q=request.args.get('q', ''))}}"
           {% else %}disabled{% endif %}>
             {% include 'heroicons/chevron-double-right.svg' %}
         </a>

@@ -1,4 +1,5 @@
 from flask import Blueprint, redirect, render_template, request, url_for
+from sqlalchemy import func
 
 from models import CertificateType, CertificateTypeField, db
 
@@ -35,10 +36,15 @@ def save_fields(t):
 
 @certificate_types_blueprint.get('/')
 def index():
+    collection = db.select(CertificateType).where(
+        CertificateType.name.ilike(f'%{request.args.get('q', '')}%')
+    )
+
     return render_template(
         'certificate-types/index.html',
         title='Certificate types',
-        collection=db.paginate(db.select(CertificateType))
+        table_count=db.session.query(func.count(CertificateType.id)).scalar(),
+        collection=db.paginate(collection),
     )
 
 @certificate_types_blueprint.get('/create')
