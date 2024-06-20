@@ -37,3 +37,11 @@ class Certificate(db.Model):
     name = db.Column(db.String(255))
     issuance_date = db.Column(db.Date())
     issuance_locale = db.Column(db.String(255))
+
+    fields = db.relationship('CertificateField')
+
+class CertificateField(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    certificate = db.Column(db.ForeignKey(Certificate.id))
+    certificate_type_field = db.Column(db.ForeignKey(CertificateTypeField.id))
+    value = db.Column(db.String(255))
