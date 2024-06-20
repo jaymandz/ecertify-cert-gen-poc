@@ -1,4 +1,4 @@
-{% set topUrl = url_for('templates.index') %}
+{% set topUrl = url_for('certificate_types.show', id=certificate_type.id) %}
 {% set formActionUrl = url_for('templates.store') %}
 {% set certificateType = certificate_type %}
 {% extends 'templates/base/create-edit.html' %}
