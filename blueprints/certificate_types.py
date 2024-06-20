@@ -18,7 +18,7 @@ def save_fields(t):
             f.description = field_descriptions[index]
             f.value_type = field_value_types[index]
 
-            try: f.is_required = field_required_flags[0] == true
+            try: f.is_required = field_required_flags[0] == 'true'
             except IndexError: f.is_required = False
 
             db.session.add(f)
@@ -28,7 +28,7 @@ def save_fields(t):
             f.description = field_descriptions[index]
             f.value_type = field_value_types[index]
 
-            try: f.is_required = field_required_flags[0] == true
+            try: f.is_required = field_required_flags[0] == 'true'
             except IndexError: f.is_required = False
         elif field_statuses[index] == 'to-delete':
             db.session.delete(db.get_or_404(CertificateTypeField, id))
