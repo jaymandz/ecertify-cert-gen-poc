@@ -30,3 +30,10 @@ class Template(db.Model):
     content = db.Column(
         db.Text().with_variant(LONGTEXT, 'mysql', 'mariadb')
     )
+
+class Certificate(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    template = db.Column(db.ForeignKey(Template.id))
+    name = db.Column(db.String(255))
+    issuance_date = db.Column(db.Date())
+    issuance_locale = db.Column(db.String(255))
