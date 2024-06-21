@@ -110,6 +110,8 @@ let loadCertificateTypeFields = (event) => {
         message: 'Loading template (and maybe fields too)&hellip;',
     })
 
+    pageData.isLoadingFields = true
+
     fetch("{{ url_for('api.templates.index')}}"+event.target.value)
     .then(r => r.json())
     .then(data => fetch(
@@ -117,6 +119,7 @@ let loadCertificateTypeFields = (event) => {
     ))
     .then(r => r.json())
     .then(data => {
+        pageData.isLoadingFields = false
         toastMaster.removeItem(key)
         // TODO: Do not update fields if certificate type never changed
     })
