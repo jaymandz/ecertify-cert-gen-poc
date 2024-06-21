@@ -9,7 +9,9 @@
         </a>
     </div>
     <div class="tooltip tooltip-right" data-tip="Download">
-        <button class="btn btn-square">
+        <button class="btn btn-square"
+          :disabled="pageData.isDownloadingTemplate"
+          @click="downloadTemplateContent">
             {% include 'heroicons/arrow-down-tray.svg' %}
         </button>
     </div>
@@ -55,4 +57,34 @@
     <button>Close</button>
 </form>
 </dialog>
+
+<div class="toast toast-top">
+    <template x-if="pageData.isDownloadingTemplate">
+        <div class="alert">
+            <span class="loading loading-spinner"></span>
+            Downloading template&hellip;
+        </div>
+    </template>
+</div>
 {% endblock content %}
+
+{% block scripts %}
+<script type="text/javascript">
+let pageData = Alpine.reactive({
+    isDownloadingTemplate: false,
+})
+
+let downloadTemplateContent = (event) => {
+    pageData.isDownloadingTemplate = true
+    fetch("{{ url_for('api.templates.show', id=template.id)}}")
+    .then(r => r.json())
+    .then(data => {
+        pageData.isDownloadingTemplate = false
+        saveAs(
+            new Blob([data.content], { type: 'image/svg+xml' }),
+            '{{ template.name }}.svg',
+        )
+    })
+}
+</script>
+{% endblock scripts %}
