@@ -1,5 +1,13 @@
 {% extends 'base/master.html' %}
 
+{% block head %}
+<style type="text/css">
+.ec-element-in-tabpanel {
+    width: calc(100vw - 66px);
+}
+</style>
+{% endblock head %}
+
 {% block content %}
 <div class="mb-4">
     <div class="tooltip tooltip-right" data-tip="To certificates list">
@@ -9,7 +17,8 @@
         </a>
     </div>
     <div class="tooltip tooltip-right" data-tip="Save">
-        <button class="btn btn-square" form="certificateForm" type="submit">
+        <button class="btn btn-square" form="certificateForm" type="submit"
+          :disabled="pageData.isLoadingFields">
             {% include 'heroicons/check.svg' %}
         </button>
     </div>
@@ -22,19 +31,19 @@
   role="tab" type="radio">
 <div class="border-base-300 overflow-y-auto p-4 rounded-box tab-content"
   role="tabpanel" style="height: calc(100vh - 192px)">
-<div class="gap-y-4 grid">
+<div class="flex flex-col space-y-4">
     <p class="font-bold">Basic information</p>
-    <label class="gap-y-1 grid">
+    <label class="flex flex-col space-y-1">
         <span>Name of certificate</span>
         <input required class="input input-bordered w-full"
           name="name" placeholder="Name of certificate" type="text">
     </label>
-    <label class="gap-y-1 grid">
+    <label class="flex flex-col space-y-1">
         <span>Issuance date</span>
         <input required class="input input-bordered w-full"
           name="issuance_date" placeholder="Issuance date" type="date">
     </label>
-    <label class="gap-y-1 grid">
+    <label class="flex flex-col space-y-1">
         <span>Issuance locale</span>
         <input required class="input input-bordered w-full"
           name="issuance_locale" placeholder="Issuance locale" type="text">
@@ -46,11 +55,13 @@
   role="tab" type="radio">
 <div class="border-base-300 overflow-y-auto p-4 rounded-box tab-content"
   role="tabpanel" style="height: calc(100vh - 192px)">
-<div class="gap-y-4 grid">
+<div class="flex flex-col space-y-4">
     <p class="font-bold">Template selection</p>
-    <label class="gap-y-1 grid">
+    <label class="flex flex-col space-y-1">
         <span>Template name</span>
-        <select required class="select select-bordered w-full" name="template">
+        <select required class="select select-bordered w-full" name="template"
+          :disabled="pageData.isLoadingFields"
+          @change="loadCertificateTypeFields">
         <option disabled selected>Select a template to use.</option>
         {% for ct in certificate_types if ct.templates|length > 0 %}
         <optgroup label="{{ ct.name }}">
@@ -61,6 +72,9 @@
         {% endfor %}
         </select>
     </label>
+    <div class="alert alert-info text-sm ec-element-in-tabpanel">
+        Just putting this alert here, I&rsquo;ll have a use for it later.
+    </div>
 </div>
 </div>
 
@@ -68,11 +82,51 @@
   role="tab" type="radio">
 <div class="border-base-300 overflow-y-auto p-4 rounded-box tab-content"
   role="tabpanel" style="height: calc(100vh - 192px)">
-<div class="gap-y-4 grid">
+<div class="flex flex-col space-y-4">
     <p class="font-bold">Other fields</p>
+
+    <template x-if="pageData.isLoadingFields">
+        <div class="flex flex-col space-y-1">
+            <div class="h-6 skeleton w-40"></div>
+            <div class="h-12 skeleton w-full"></div>
+        </div>
+    </template>
 </div>
 </div>
 </div>
 </form>
 
+<div class="toast toast-top">
+    <template x-if="pageData.isLoadingFields">
+        <div class="alert">
+            <span class="loading loading-spinner"></span>
+            Loading certificate fields&hellip;
+        </div>
+    </template>
+</div>
+
 {% endblock content %}
+
+{% block scripts %}
+<script type="text/javascript">
+let pageData = Alpine.reactive({
+    isLoadingFields: false,
+})
+
+let loadCertificateTypeFields = (event) => {
+    pageData.isLoadingFields = true
+
+    fetch("{{ url_for('api.templates.index')}}"+event.target.value)
+    .then(r => r.json())
+    .then(data => fetch(
+        "{{ url_for('api.certificate_types.index')}}"+data.certificate_type
+    ))
+    .then(r => r.json())
+    .then(data => {
+        console.log(data)
+        pageData.isLoadingFields = false
+        // TODO: Do not update fields if certificate type never changed
+    })
+}
+</script>
+{% endblock scripts %}
