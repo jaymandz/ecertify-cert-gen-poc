@@ -5,9 +5,9 @@ from flask import Flask, render_template
 from flask_migrate import Migrate
 
 from blueprints.api import api_blueprint
-from blueprints.certificate_types import certificate_types_blueprint
-from blueprints.certificates import certificates_blueprint
-from blueprints.templates import templates_blueprint
+from blueprints.web.certificate_types import certificate_types_blueprint
+from blueprints.web.certificates import certificates_blueprint
+from blueprints.web.templates import templates_blueprint
 from models import db
 
 load_dotenv()
