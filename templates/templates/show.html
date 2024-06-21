@@ -57,15 +57,6 @@
     <button>Close</button>
 </form>
 </dialog>
-
-<div class="toast toast-top">
-    <template x-if="pageData.isDownloadingTemplate">
-        <div class="alert">
-            <span class="loading loading-spinner"></span>
-            Downloading template&hellip;
-        </div>
-    </template>
-</div>
 {% endblock content %}
 
 {% block scripts %}
@@ -75,11 +66,17 @@ let pageData = Alpine.reactive({
 })
 
 let downloadTemplateContent = (event) => {
+    let key = toastMaster.pushItem({
+        loading: true,
+        message: 'Downloading template&hellip;',
+    })
+
     pageData.isDownloadingTemplate = true
     fetch("{{ url_for('api.templates.show', id=template.id)}}")
     .then(r => r.json())
     .then(data => {
         pageData.isDownloadingTemplate = false
+        toastMaster.removeItem(key)
         saveAs(
             new Blob([data.content], { type: 'image/svg+xml' }),
             '{{ template.name }}.svg',
