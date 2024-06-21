@@ -1,0 +1,30 @@
+{% extends 'base/master.html' %}
+
+{% block content %}
+<div class="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0"
+  style="height: calc(100vh - 96px)">
+<div class="bg-base-300 hero p-4 rounded-box">
+<div class="flex flex-col hero-content">
+    <p class="font-bold text-3xl">Certificate types</p>
+    <p>
+        Manage various types of certificates for various occasions and the
+        templates used for creating them.
+    </p>
+    <a class="btn" href="{{ url_for('certificate_types.index')}}"
+      role="button">Go to Certificate types list</a>
+</div>
+</div>
+
+<div class="bg-base-300 hero p-4 rounded-box">
+<div class="flex flex-col hero-content">
+    <p class="font-bold text-3xl">Certificates</p>
+    <p>
+        Create certificates, add as many recipients as needed, and generate all
+        the copies they will receive.
+    </p>
+    <a class="btn" href="{{ url_for('certificates.index')}}"
+      role="button">Go to Certificates list</a>
+</div>
+</div>
+</div>
+{% endblock content %}
