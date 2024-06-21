@@ -14,6 +14,35 @@
 <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.js" integrity="sha256-YGDBOYCK1omubwVepl646qkDFPzO2nKvcno2mn5p8mM=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.10/dist/cdn.js" integrity="sha256-qyF4uwB94LHZcK4n0ueDnAAdtymGsA6yY584NmfE3Lk=" crossorigin="anonymous"></script>
 
+<script type="text/javascript">
+let toastMaster = {
+    items: Alpine.reactive([]),
+    alertClass(item)
+    {
+        var classes = ['alert']
+        var alertTypes = ['info', 'success', 'warning', 'error']
+
+        if (alertTypes.indexOf(item.body.alertType) > -1)
+        {
+            classes.push('alert-'+item.body.alertType)
+        }
+
+        return classes.join(' ')
+    },
+    pushItem(body)
+    {
+        let key = Math.random().toString(16)
+        this.items.push({ key, body })
+        return key
+    },
+    removeItem(key)
+    {
+        let index = this.items.findIndex(i => i.key == key)
+        this.items.splice(index, 1)
+    },
+}
+</script>
+
 {% block scripts %}{% endblock %}
 
 <div class="navbar bg-primary mb-4">
@@ -54,6 +83,17 @@
 
 <div class="mx-auto px-4">
     {% block content %}{% endblock %}
+</div>
+
+<div class="toast toast-top">
+<template x-for="item in toastMaster.items">
+    <div :class="toastMaster.alertClass(item)">
+        <template x-if="item.body.loading">
+            <span class="loading loading-spinner"></span>
+        </template>
+        <div x-html="item.body.message"></div>
+    </div>
+</template>
 </div>
 
 </body>

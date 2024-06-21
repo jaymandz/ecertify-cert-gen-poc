@@ -96,15 +96,6 @@
 </div>
 </form>
 
-<div class="toast toast-top">
-    <template x-if="pageData.isLoadingFields">
-        <div class="alert">
-            <span class="loading loading-spinner"></span>
-            Loading certificate fields&hellip;
-        </div>
-    </template>
-</div>
-
 {% endblock content %}
 
 {% block scripts %}
@@ -114,7 +105,10 @@ let pageData = Alpine.reactive({
 })
 
 let loadCertificateTypeFields = (event) => {
-    pageData.isLoadingFields = true
+    let key = toastMaster.pushItem({
+        loading: true,
+        message: 'Loading template (and maybe fields too)&hellip;',
+    })
 
     fetch("{{ url_for('api.templates.index')}}"+event.target.value)
     .then(r => r.json())
@@ -123,8 +117,7 @@ let loadCertificateTypeFields = (event) => {
     ))
     .then(r => r.json())
     .then(data => {
-        console.log(data)
-        pageData.isLoadingFields = false
+        toastMaster.removeItem(key)
         // TODO: Do not update fields if certificate type never changed
     })
 }
