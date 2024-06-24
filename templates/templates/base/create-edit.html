@@ -17,7 +17,7 @@
 <form action="{{ formActionUrl }}" class="grid gap-y-2" id="templateForm"
   method="post">
     {% if certificateType %}
-    <input name="certificate_type" type="hidden"
+    <input name="certificate_type_id" type="hidden"
       value="{{ certificateType.id }}">
     {% endif %}
     <input required class="input input-bordered" name="name"

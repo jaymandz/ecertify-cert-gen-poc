@@ -7,7 +7,7 @@ templates_blueprint = Blueprint('templates', __name__)
 
 @templates_blueprint.get('/create')
 def create():
-    t = db.get_or_404(CertificateType, request.args.get('certificate_type'))
+    t = db.get_or_404(CertificateType, request.args.get('certificate_type_id'))
     return render_template(
         'templates/create.html',
         title='Create a template',
@@ -17,14 +17,14 @@ def create():
 @templates_blueprint.post('/')
 def store():
     t = Template()
-    t.certificate_type = request.form['certificate_type']
+    t.certificate_type_id = int(request.form['certificate_type_id'])
     t.name = request.form['name']
     t.content = request.form['content']
 
     db.session.add(t)
     db.session.commit()
 
-    return redirect(url_for('certificate_types.show', id=t.certificate_type))
+    return redirect(url_for('certificate_types.show', id=t.certificate_type_id))
 
 @templates_blueprint.get('/<int:id>')
 def show(id):

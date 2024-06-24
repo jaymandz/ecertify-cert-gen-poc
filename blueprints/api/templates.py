@@ -6,7 +6,7 @@ templates_blueprint = Blueprint('templates', __name__)
 
 def dict_from_scalar(t): return {
     'id': t.id,
-    'certificate_type': t.certificate_type,
+    'certificate_type_id': t.certificate_type_id,
     'name': t.name,
     'content': t.content,
 }

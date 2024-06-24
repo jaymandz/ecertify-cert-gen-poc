@@ -15,7 +15,7 @@ def save_fields(t):
     for index, id in enumerate(field_ids):
         if field_statuses[index] == 'to-add':
             f = CertificateTypeField()
-            f.certificate_type = t.id
+            f.certificate_type_id = t.id
             f.description = field_descriptions[index]
             f.value_type = field_value_types[index]
 
@@ -25,7 +25,7 @@ def save_fields(t):
             db.session.add(f)
         elif field_statuses[index] == 'to-edit':
             f = db.get_or_404(CertificateTypeField, id)
-            f.certificate_type = t.id
+            f.certificate_type_id = t.id
             f.description = field_descriptions[index]
             f.value_type = field_value_types[index]
 
