@@ -18,30 +18,40 @@ class CertificateType(db.Model):
 
 class CertificateTypeField(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    certificate_type = db.Column(db.ForeignKey(CertificateType.id))
+    certificate_type_id = db.Column(db.ForeignKey(CertificateType.id))
     description = db.Column(db.String(255))
     value_type = db.Column(db.Enum(FieldValueTypeEnum))
     is_required = db.Column(db.Boolean())
 
+    certificate_type = db.relationship('CertificateType')
+
 class Template(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    certificate_type = db.Column(db.ForeignKey(CertificateType.id))
+    certificate_type_id = db.Column(db.ForeignKey(CertificateType.id))
     name = db.Column(db.String(255))
     content = db.Column(
         db.Text().with_variant(LONGTEXT, 'mysql', 'mariadb')
     )
 
+    certificate_type = db.relationship('CertificateType')
+
 class Certificate(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    template = db.Column(db.ForeignKey(Template.id))
+    template_id = db.Column(db.ForeignKey(Template.id))
     name = db.Column(db.String(255))
     issuance_date = db.Column(db.Date())
     issuance_locale = db.Column(db.String(255))
 
+    template = db.relationship('Template')
     fields = db.relationship('CertificateField')
 
 class CertificateField(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    certificate = db.Column(db.ForeignKey(Certificate.id))
-    certificate_type_field = db.Column(db.ForeignKey(CertificateTypeField.id))
+    certificate_id = db.Column(db.ForeignKey(Certificate.id))
+    certificate_type_field_id = db.Column(
+        db.ForeignKey(CertificateTypeField.id)
+    )
     value = db.Column(db.String(255))
+
+    certificate = db.relationship('Certificate')
+    certificate_type_field = db.relationship('CertificateTypeField')
