@@ -60,7 +60,7 @@
     <span class="tooltip tooltip-left" data-tip="Required?">
         <input class="toggle" form="certificateTypeForm"
           name="field-required-flags" type="checkbox" value="true"
-          :disabled="row.status == 'to-delete'">
+          :checked="row.is_required" :disabled="row.status == 'to-delete'">
     </span>
     <template x-if="row.status != 'to-add'">
         <button :class="toggleBtnClass(row)" @click="toggleDelete(index)">
@@ -68,8 +68,7 @@
         </button>
     </template>
     <template x-if="row.status == 'to-add'">
-        <button class="btn btn-square" :disabled="rows.length == 1"
-          @click="removeField(index)">
+        <button class="btn btn-square" @click="removeField(index)">
             {% include 'heroicons/x-mark.svg' %}
         </button>
     </template>
