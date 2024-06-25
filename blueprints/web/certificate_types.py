@@ -7,6 +7,7 @@ certificate_types_blueprint = Blueprint('certificate_types', __name__)
 
 def save_fields(t):
     field_ids = [ int(id) for id in request.form.getlist('field-ids') ]
+    field_names = request.form.getlist('field-names')
     field_descriptions = request.form.getlist('field-descriptions')
     field_value_types = request.form.getlist('field-value-types')
     field_required_flags = request.form.getlist('field-required-flags')
@@ -16,6 +17,7 @@ def save_fields(t):
         if field_statuses[index] == 'to-add':
             f = CertificateTypeField()
             f.certificate_type_id = t.id
+            f.name = field_names[index]
             f.description = field_descriptions[index]
             f.value_type = field_value_types[index]
 
@@ -26,6 +28,7 @@ def save_fields(t):
         elif field_statuses[index] == 'to-edit':
             f = db.get_or_404(CertificateTypeField, id)
             f.certificate_type_id = t.id
+            f.name = field_names[index]
             f.description = field_descriptions[index]
             f.value_type = field_value_types[index]
 

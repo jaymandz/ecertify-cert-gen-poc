@@ -10,6 +10,7 @@ def dict_from_scalar(t): return {
     'fields': [
         {
             'id': f.id,
+            'name': f.name,
             'description': f.description,
             'value_type': f.value_type.value,
             'is_required': f.is_required,

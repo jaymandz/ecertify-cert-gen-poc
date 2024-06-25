@@ -43,11 +43,14 @@
 <ul class="bg-base-300 menu rounded-box" x-data="{ rows }">
 <template x-for="(row, index) in rows">
 <li>
-<div class="grid grid-cols-1 grid-rows-2 sm:grid-rows-1">
+<div class="grid grid-cols-1 grid-rows-3 sm:grid-rows-1">
 <input form="certificateTypeForm" name="field-ids" type="hidden"
   :value="row.id">
 <input form="certificateTypeForm" name="field-statuses" type="hidden"
   :value="row.status">
+<input required class="input" form="certificateTypeForm"
+  name="field-names" placeholder="Name" type="text"
+  :disabled="row.status == 'to-delete'" :value="row.name">
 <input required class="input" form="certificateTypeForm"
   name="field-descriptions" placeholder="Description" type="text"
   :disabled="row.status == 'to-delete'" :value="row.description">
@@ -87,6 +90,7 @@ let rows = Alpine.reactive([
     {% for field in certificateType.fields %}
     {
         id: {{ field.id }},
+        name: '{{ field.name }}',
         description: '{{ field.description }}',
         value_type: '{{ field.value_type.value }}',
         is_required: '{{ "true" if field.is_required else "" }}',
@@ -96,6 +100,7 @@ let rows = Alpine.reactive([
     {% else %}
     {
         id: 0,
+        name: '',
         description: '',
         value_type: 'text',
         is_required: '',
@@ -114,6 +119,7 @@ function addField(event)
 {
     rows.push({
         id: 0,
+        name: '',
         description: '',
         value_type: 'text',
         is_required: '',
