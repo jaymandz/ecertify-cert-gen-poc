@@ -45,6 +45,7 @@ class Certificate(db.Model):
 
     template = db.relationship('Template')
     fields = db.relationship('CertificateField')
+    recipients = db.relationship('Recipient')
 
 class CertificateField(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -56,3 +57,16 @@ class CertificateField(db.Model):
 
     certificate = db.relationship('Certificate')
     certificate_type_field = db.relationship('CertificateTypeField')
+
+class Recipient(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    certificate_id = db.Column(db.ForeignKey(Certificate.id), nullable=False)
+    last_name = db.Column(db.String(255), nullable=False)
+    first_name = db.Column(db.String(255), nullable=False)
+    middle_name = db.Column(db.String(255))
+    honorific = db.Column(db.String(255))
+    suffix = db.Column(db.String(255))
+    organization = db.Column(db.String(255))
+    address = db.Column(db.String(255))
+
+    certificate = db.relationship('Certificate')
