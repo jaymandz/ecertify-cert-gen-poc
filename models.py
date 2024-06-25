@@ -19,6 +19,7 @@ class CertificateType(db.Model):
 class CertificateTypeField(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     certificate_type_id = db.Column(db.ForeignKey(CertificateType.id))
+    name = db.Column(db.String(255))
     description = db.Column(db.String(255))
     value_type = db.Column(db.Enum(FieldValueTypeEnum))
     is_required = db.Column(db.Boolean())
