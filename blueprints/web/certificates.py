@@ -1,13 +1,14 @@
 import re
 
 from flask import Blueprint, redirect, render_template, request, url_for
-from sqlalchemy import func
+from sqlalchemy import func, or_
 
 from models import (
     Certificate,
     CertificateField,
     CertificateType,
     CertificateTypeField,
+    Recipient,
     Template,
     db,
 )
@@ -72,13 +73,30 @@ def store():
 @certificates_blueprint.get('/<int:id>')
 def show(id):
     c = db.get_or_404(Certificate, id)
+
+    collection = db.select(Recipient). \
+        where(Recipient.certificate_id==c.id).where(or_(
+            Recipient.last_name.ilike(f'%{request.args.get('q', '')}%'),
+            Recipient.first_name.ilike(f'%{request.args.get('q', '')}%'),
+            Recipient.middle_name.ilike(f'%{request.args.get('q', '')}%'),
+            Recipient.honorific.ilike(f'%{request.args.get('q', '')}%'),
+            Recipient.suffix.ilike(f'%{request.args.get('q', '')}%'),
+            Recipient.organization.ilike(f'%{request.args.get('q', '')}%'),
+            Recipient.address.ilike(f'%{request.args.get('q', '')}%'),
+        ))
+
     return render_template(
         'certificates/show.html',
         title=f'Certificate "{c.name}"',
         certificate=c,
+        collection=db.paginate(collection),
     )
 
 @certificates_blueprint.get('/<int:id>/edit')
 def edit(id):
     c = db.get_or_404(Certificate, id)
+    return 'Under construction'
+
+@certificates_blueprint.post('/<int:id>/delete')
+def delete(id):
     return 'Under construction'

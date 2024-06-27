@@ -1,0 +1,11 @@
+<form class="flex gap-x-1 items-center mb-4">
+    <input class="input input-bordered w-full" name="q"
+      placeholder="Search {{ nounPlural }} here." type="text"
+      value="{{ request.args.get('q', '')}}">
+    <button class="btn btn-square" type="submit">
+        {% include 'heroicons/magnifying-glass.svg' %}
+    </button>
+    <a class="btn" role="button" href="{{ indexUrl }}">
+        Clear
+    </a>
+</form>

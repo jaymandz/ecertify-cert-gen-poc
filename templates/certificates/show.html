@@ -8,38 +8,54 @@
             {% include 'heroicons/arrow-uturn-left.svg' %}
         </a>
     </div>
-    <div class="tooltip tooltip-right" data-tip="Add a recipient">
-        <a class="btn btn-square" role="button"
-          href="{{ url_for('recipients.create', certificate_id=certificate.id) }}">
-            {% include 'heroicons/user-plus.svg' %}
+
+    <div class="tooltip tooltip-right" data-tip="Recipient options">
+    <div class="dropdown dropdown-hover">
+    <div class="btn" role="button" tabindex="0">
+        {% include 'heroicons/users.svg' %}
+        {% include 'heroicons/chevron-down.svg' %}
+    </div>
+    <ul class="bg-base-100 dropdown-content menu rounded-box shadow w-64 z-[1]"
+      tabindex="0">
+    <li>
+        <a href="{{ url_for('recipients.create', certificate_id=certificate.id)}}">
+            Add a recipient
         </a>
+    </li>
+    <li>
+        <a>Add recipients via CSV</a>
+    </li>
+    <li>
+        <a>Download recipient copies as ZIP</a>
+    </li>
+    </ul>
     </div>
-    <div class="tooltip tooltip-right" data-tip="Download as ZIP">
-        <button class="btn btn-square">
-            {% include 'heroicons/archive-box-arrow-down.svg' %}
-        </button>
     </div>
+
     <div class="tooltip tooltip-right" data-tip="Edit">
         <a class="btn btn-square" role="button"
           href="{{ url_for('certificates.edit', id=certificate.id) }}">
             {% include 'heroicons/pencil-square.svg' %}
         </a>
     </div>
+
     <div class="tooltip tooltip-right" data-tip="Delete">
-        <button class="btn btn-square">
+        <button class="btn btn-square" @click="confirmDeleteModal.showModal()">
             {% include 'heroicons/trash.svg' %}
         </button>
     </div>
 </div>
 
-<div class="card card-compact mb-4 overflow-y-auto shadow-lg">
-<div class="card-body" style="height: calc((100vh - 296px) / 2)">
+<div class="card card-compact mb-4 overflow-y-auto shadow-lg"
+  style="height: calc((100vh - 296px) / 2)">
+<div class="card-body">
     <h2 class="card-title">{{ certificate.name }}</h2>
+
     <p>
         Issued on <span x-text="dbToHumanFriendlyDate('{{ certificate.issuance_date }}')"></span>
         at {{ certificate.issuance_locale }}.
     </p>
-
+    
     <p>
     {% for field in certificate.fields %}
         <strong>{{ field.certificate_type_field.description }}</strong>
@@ -51,27 +67,37 @@
         <br>
     {% endfor %}
     </p>
-
-    <p>{{ certificate.recipients|length }} recipient(s) listed below.</p>
+    
+    <p>
+        This certificate has {{ certificate.recipients|length }} recipient(s).
+    </p>
 </div>
 </div>
 
-<form class="flex gap-x-1 items-center mb-4">
-    <input class="input input-bordered w-full" name="q"
-      placeholder="Search recipients here." type="text"
-      value="{{ request.args.get('q', '')}}">
-    <button class="btn btn-square" type="submit">
-        {% include 'heroicons/magnifying-glass.svg' %}
-    </button>
-</form>
+{% with %}
+    {% set indexUrl = url_for('certificates.show', id=certificate.id) %}
+    {% set nounPlural = 'recipients' %}
+    {% include 'base/chunks/search.html' %}
+{% endwith %}
 
 <div class="flex justify-center mb-2">
     <div class="join">
-        <a class="btn join-item" role="button">
+        <a class="btn join-item" role="button"
+          {% if collection.prev_num %}
+          href="{{ url_for('certificates.show', id=certificate.id, page=collection.prev_num, per_page=request.args.get('per_page'), q=request.args.get('q', ''))}}"
+          {% else %}disabled{% endif %}>
             {% include 'heroicons/chevron-double-left.svg' %}
         </a>
-        <a class="btn join-item" role="button">1</a>
-        <a class="btn join-item" role="button">
+        {% for p in collection.iter_pages() if p %}
+        <a class="btn join-item" role="button"
+          {% if collection.page != p %}
+          href="{{ url_for('certificates.show', id=certificate.id, page=p, per_page=request.args.get('per_page'), q=request.args.get('q', ''))}}"
+          {% else %}disabled{% endif %}>{{ p }}</a>
+        {% endfor %}
+        <a class="btn join-item" role="button"
+          {% if collection.next_num %}
+          href="{{ url_for('certificates.show', id=certificate.id, page=collection.next_num, per_page=request.args.get('per_page'), q=request.args.get('q', ''))}}"
+          {% else %}disabled{% endif %}>
             {% include 'heroicons/chevron-double-right.svg' %}
         </a>
     </div>
@@ -80,15 +106,39 @@
 <div class="bg-base-300 mb-4 overflow-y-auto rounded-box"
   style="height: calc((100vh - 296px) / 2)">
 <ul class="bg-base-300 menu rounded-box">
-    {% for recipient in certificate.recipients %}
+    {% for recipient in collection %}
     <li>
-        <a href="#">
-            {{ recipient.last_name }}
+        <a href="{{ url_for('recipients.show', id=recipient.id) }}">
+            {{ recipient.last_name }}, {{ recipient.first_name }}
+            {% if recipient.middle_name %}
+            <small>{{ recipient.middle_name }}</small>
+            {% endif %}
         </a>
     </li>
     {% endfor %}
 </ul>
 </div>
+
+<dialog class="modal" id="confirmDeleteModal">
+<div class="modal-box">
+    <p>
+        Are you sure you want to delete this certificate? This cannot be
+        undone.
+    </p>
+
+    <div class="modal-action">
+        <form method="dialog">
+            <button class="btn">Cancel</button>
+        </form>
+        <form action="{{ url_for('certificates.delete', id=certificate.id)}}" method="post">
+            <button class="btn btn-primary" type="submit">OK</button>
+        </form>
+    </div>
+</div>
+<form class="modal-backdrop" method="dialog">
+    <button>Close</button>
+</form>
+</dialog>
 {% endblock content %}
 
 {% block scripts %}
