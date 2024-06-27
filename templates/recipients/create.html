@@ -1,0 +1,38 @@
+{% extends 'base/master.html' %}
+
+{% block content %}
+<div class="mb-4">
+    <div class="tooltip tooltip-right" data-tip="To certificate">
+        <a class="btn btn-square" role="button"
+          href="{{ url_for('certificates.show', id=certificate.id) }}">
+            {% include 'heroicons/arrow-uturn-left.svg' %}
+        </a>
+    </div>
+    <div class="tooltip tooltip-right" data-tip="Save">
+        <button class="btn btn-square" form="recipientForm" type="submit">
+            {% include 'heroicons/check.svg' %}
+        </button>
+    </div>
+</div>
+
+<form action="{{ url_for('recipients.store') }}"
+  class="flex flex-col space-y-2" id="recipientForm" method="post">
+    <input name="certificate_id" type="hidden" value="{{ certificate.id }}">
+    <div class="gap-2 grid grid-cols-1 sm:grid-cols-3">
+        <input required class="input input-bordered w-full" name="last_name"
+          placeholder="Last name (required)">
+        <input required class="input input-bordered w-full" name="first_name"
+          placeholder="First name (required)">
+        <input class="input input-bordered w-full" name="middle_name"
+          placeholder="Middle name">
+    </div>
+    <input class="input input-bordered w-full" name="honorific"
+      placeholder="Honorific">
+    <input class="input input-bordered w-full" name="suffix"
+      placeholder="Suffix">
+    <input class="input input-bordered w-full" name="organization"
+      placeholder="Organization">
+    <input class="input input-bordered w-full" name="address"
+      placeholder="Address">
+</form>
+{% endblock content %}
