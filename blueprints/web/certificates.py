@@ -72,4 +72,13 @@ def store():
 @certificates_blueprint.get('/<int:id>')
 def show(id):
     c = db.get_or_404(Certificate, id)
+    return render_template(
+        'certificates/show.html',
+        title=f'Certificate "{c.name}"',
+        certificate=c,
+    )
+
+@certificates_blueprint.get('/<int:id>/edit')
+def edit(id):
+    c = db.get_or_404(Certificate, id)
     return 'Under construction'

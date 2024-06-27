@@ -7,6 +7,7 @@ from flask_migrate import Migrate
 from blueprints.api import api_blueprint
 from blueprints.web.certificate_types import certificate_types_blueprint
 from blueprints.web.certificates import certificates_blueprint
+from blueprints.web.recipients import recipients_blueprint
 from blueprints.web.templates import templates_blueprint
 from models import db
 
@@ -28,6 +29,10 @@ application.register_blueprint(
     url_prefix='/certificates',
 )
 application.register_blueprint(
+    recipients_blueprint,
+    url_prefix='/recipients',
+)
+application.register_blueprint(
     templates_blueprint,
     url_prefix='/templates',
 )
@@ -37,4 +42,7 @@ migrate = Migrate(application, db)
 
 @application.get('/')
 def index():
-    return render_template('index.html')
+    return render_template(
+        'index.html',
+        title='Bienvenidos!',
+    )
