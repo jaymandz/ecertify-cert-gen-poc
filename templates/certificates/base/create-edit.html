@@ -1,0 +1,209 @@
+{% if certificate %}
+{% set formActionUrl = url_for('certificates.update', id=certificate.id) %}
+{% else %}
+{% set formActionUrl = url_for('certificates.store') %}
+{% endif %}
+
+{% extends 'base/master.html' %}
+
+{% block head %}
+<style type="text/css">
+.ec-element-in-tabpanel {
+    width: calc(100vw - 66px);
+}
+</style>
+{% endblock head %}
+
+{% block content %}
+<div class="mb-4">
+    {% if certificate %}
+    <div class="tooltip tooltip-right" data-tip="To certificate">
+        <a class="btn btn-square" role="button"
+          href="{{ url_for('certificates.show', id=certificate.id) }}">
+            {% include 'heroicons/arrow-uturn-left.svg' %}
+        </a>
+    </div>
+    {% else %}
+    <div class="tooltip tooltip-right" data-tip="To certificates list">
+        <a class="btn btn-square" role="button"
+          href="{{ url_for('certificates.index') }}">
+            {% include 'heroicons/arrow-uturn-left.svg' %}
+        </a>
+    </div>
+    {% endif %}
+    <div class="tooltip tooltip-right" data-tip="Save">
+        <button class="btn btn-square" form="certificateForm" type="submit"
+          :disabled="pageData.isLoadingFields">
+            {% include 'heroicons/check.svg' %}
+        </button>
+    </div>
+</div>
+
+<form action="{{ formActionUrl }}" id="certificateForm" method="post">
+<div class="tabs tabs-lifted" role="tablist">
+<input checked aria-label="Step 1" class="tab" name="certificateFormTabs"
+  role="tab" type="radio">
+<div class="border-base-300 overflow-y-auto p-4 rounded-box tab-content"
+  role="tabpanel" style="height: calc(100vh - 192px)">
+<div class="flex flex-col space-y-4">
+    <p class="font-bold">Basic information</p>
+    <label class="flex flex-col space-y-1">
+        <span>Name of certificate</span>
+        <input required class="input input-bordered w-full"
+          name="name" placeholder="Name of certificate" type="text"
+          {% if certificate %}value="{{ certificate.name }}"{% endif %}>
+    </label>
+    <label class="flex flex-col space-y-1">
+        <span>Issuance date</span>
+        <input required class="input input-bordered w-full"
+          name="issuance_date" placeholder="Issuance date" type="date"
+          {% if certificate %}value="{{ certificate.issuance_date }}"{% endif %}>
+    </label>
+    <label class="flex flex-col space-y-1">
+        <span>Issuance locale</span>
+        <input required class="input input-bordered w-full"
+          name="issuance_locale" placeholder="Issuance locale" type="text"
+          {% if certificate %}value="{{ certificate.issuance_locale }}"{% endif %}>
+    </label>
+</div>
+</div>
+
+<input aria-label="Step 2" class="tab" name="certificateFormTabs"
+  role="tab" type="radio">
+<div class="border-base-300 overflow-y-auto p-4 rounded-box tab-content"
+  role="tabpanel" style="height: calc(100vh - 192px)">
+<div class="flex flex-col space-y-4">
+    <p class="font-bold">Template selection</p>
+    <label class="flex flex-col space-y-1">
+        <span>Template name</span>
+        <select required class="select select-bordered w-full"
+          name="template_id" :disabled="pageData.isLoadingFields"
+          @change="loadCertificateTypeFields">
+        <option disabled selected>Select a template to use.</option>
+        {% for ct in certificate_types if ct.templates|length > 0 %}
+        <optgroup label="{{ ct.name }}">
+            {% for t in ct.templates %}
+            <option value="{{ t.id }}"
+              {% if certificate.template_id == t.id %}selected{% endif %}>
+              {{ t.name }}</option>
+            {% endfor %}
+        </optgroup>
+        {% endfor %}
+        </select>
+    </label>
+    <div class="alert alert-info text-sm ec-element-in-tabpanel">
+        Just putting this alert here, I&rsquo;ll have a use for it later.
+    </div>
+</div>
+</div>
+
+<input aria-label="Step 3" class="tab" name="certificateFormTabs"
+  role="tab" type="radio">
+<div class="border-base-300 overflow-y-auto p-4 rounded-box tab-content"
+  role="tabpanel" style="height: calc(100vh - 192px)">
+<div class="flex flex-col space-y-4">
+    <p class="font-bold">Other fields</p>
+
+    <template x-if="pageData.isLoadingFields">
+        <div class="flex flex-col space-y-1">
+            <div class="h-6 skeleton w-40"></div>
+            <div class="h-12 skeleton w-full"></div>
+        </div>
+    </template>
+
+    <template x-if="! pageData.isLoadingFields && pageData.fieldInfo.fields.length == 0">
+        <div class="alert ec-element-in-tabpanel" role="alert">
+            There are no other fields for you to fill out.
+        </div>
+    </template>
+
+    <template x-if="! pageData.isLoadingFields && pageData.fieldInfo.fields.length > 0">
+    <template x-for="field in pageData.fieldInfo.fields">
+        <label class="flex flex-col space-y-1">
+            <span x-html="field.description"></span>
+            <input class="input input-bordered w-full"
+              :name="'field__'+field.name" :placeholder="field.description"
+              :required="field.is_required" :type="field.value_type"
+              :value="field.value">
+        </label>
+    </template>
+    </template>
+</div>
+</div>
+</div>
+</form>
+
+{% endblock content %}
+
+{% block scripts %}
+<script type="text/javascript">
+let pageData = Alpine.reactive({
+    {% if certificate %}
+    currentFieldInfo: {
+        certificateTypeId: {{ certificate.template.certificate_type.id }},
+        fields: [
+            {% for field in certificate.fields %}
+            {
+                name: '{{ field.certificate_type_field.name }}',
+                description: '{{ field.certificate_type_field.description }}',
+                value_type: '{{ field.certificate_type_field.value_type.value }}',
+                is_required: '{{ field.certificate_type_field.is_required }}' == 'True',
+                value: '{{ field.value }}',
+            },
+            {% endfor %}
+        ],
+    },
+    {% else %}
+    currentFieldInfo: {
+        certificateTypeId: null,
+        fields: [],
+    },
+    {% endif %}
+    isLoadingFields: false,
+    fieldInfo: {
+        certificateTypeId: null,
+        fields: [],
+    },
+})
+
+pageData.fieldInfo = _.cloneDeep(pageData.currentFieldInfo)
+
+let loadCertificateTypeFields = (event) => {
+    let key = toastMaster.pushItem({
+        loading: true,
+        message: 'Loading template (and maybe fields too)&hellip;',
+    })
+
+    pageData.isLoadingFields = true
+
+    fetch("{{ url_for('api.templates.index')}}"+event.target.value)
+    .then(r => r.json())
+    .then(data => {
+        pageData.fieldInfo.certificateTypeId = data.certificate_type_id
+        return fetch(
+            "{{ url_for('api.certificate_types.index')}}"+
+            data.certificate_type_id
+        )
+    })
+    .then(r => r.json())
+    .then(data => {
+        // pfi and pcfi were simply made for brevity
+        let pfi = pageData.fieldInfo
+        let pcfi = pageData.currentFieldInfo
+
+        if (pfi.certificateTypeId == pcfi.certificateTypeId)
+        {
+            pfi.fields = pcfi.fields
+        }
+        else
+        {
+            pfi.fields = data.fields
+        }
+
+        pageData.isLoadingFields = false
+        toastMaster.removeItem(key)
+        // TODO: Do not update fields if certificate type never changed
+    })
+}
+</script>
+{% endblock scripts %}

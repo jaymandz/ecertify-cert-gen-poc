@@ -1,7 +1,7 @@
 import re
 
 from flask import Blueprint, redirect, render_template, request, url_for
-from sqlalchemy import func, or_
+from sqlalchemy import and_, func, or_
 
 from models import (
     Certificate,
@@ -14,6 +14,35 @@ from models import (
 )
 
 certificates_blueprint = Blueprint('certificates', __name__)
+
+def insert_fields(certificate):
+    ctype_id = db.session.execute(
+        db.select(Template).where(Template.id == certificate.template_id)
+    ).scalar_one().certificate_type_id
+
+    for field_name in request.form:
+        if not re.match('field__', field_name): continue
+
+        tf = db.session.execute(db.select(CertificateTypeField).where(and_(
+            CertificateTypeField.certificate_type_id == ctype_id,
+            CertificateTypeField.name == field_name[7:],
+        ))).scalar_one()
+
+        cf = CertificateField()
+        cf.certificate_id = certificate.id
+        cf.certificate_type_field_id = tf.id
+        cf.value = request.form[field_name]
+        db.session.add(cf)
+
+def update_fields(certificate):
+    for field_name in request.form:
+        if not re.match('field__', field_name): continue
+
+        cf = db.session.execute(db.select(CertificateField).where(and_(
+            CertificateField.certificate_id == certificate.id,
+            CertificateField.certificate_type_field.name == field_name[7:],
+        )))
+        cf.value = request.form[field_name]
 
 @certificates_blueprint.get('/')
 def index():
@@ -48,24 +77,7 @@ def store():
 
     db.session.add(c)
 
-    for field_name in request.form:
-        if not re.match('field__', field_name): continue
-
-        ctype_id = db.session.execute(
-            db.select(Template).where(Template.id==c.template_id)
-        ).scalar_one().certificate_type_id
-
-        tf = db.session.execute(
-            db.select(CertificateTypeField). \
-              where(CertificateTypeField.certificate_type_id == ctype_id). \
-              where(CertificateTypeField.name == field_name[7:])
-        ).scalar_one()
-
-        cf = CertificateField()
-        cf.certificate_id = c.id
-        cf.certificate_type_field_id = tf.id
-        cf.value = request.form[field_name]
-        db.session.add(cf)
+    insert_fields(c)
 
     db.session.commit()
     return redirect(url_for('certificates.index'))
@@ -95,8 +107,42 @@ def show(id):
 @certificates_blueprint.get('/<int:id>/edit')
 def edit(id):
     c = db.get_or_404(Certificate, id)
-    return 'Under construction'
+    return render_template(
+        'certificates/edit.html',
+        title=f'Edit certificate "{c.name}"',
+        certificate=c,
+        certificate_types=db.session.execute(
+            db.select(CertificateType)
+        ).scalars(),
+    )
+
+@certificates_blueprint.post('/<int:id>')
+def update(id):
+    c = db.get_or_404(Certificate, id)
+
+    c.template_id = request.form['template_id']
+    c.name = request.form['name']
+    c.issuance_date = request.form['issuance_date']
+    c.issuance_locale = request.form['issuance_locale']
+
+    t = db.session.execute(
+        db.select(Template).where(Template.id == c.template_id)
+    ).scalar_one()
+    if t.certificate_type_id == request.form['template_id']:
+        update_fields(c)
+    else:
+        db.session.execute(db.delete(CertificateField).where(
+            CertificateField.certificate_id == c.id
+        ))
+        insert_fields(c)
+
+    db.session.commit()
+    return redirect(url_for('certificates.show', id=c.id))
 
 @certificates_blueprint.post('/<int:id>/delete')
 def delete(id):
+    return 'Under construction'
+
+@certificates_blueprint.post('/<int:id>/zip')
+def zip(id):
     return 'Under construction'
