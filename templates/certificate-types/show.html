@@ -52,24 +52,10 @@
 </ul>
 </div>
 
-<dialog class="modal" id="confirmDeleteModal">
-<div class="modal-box">
-    <p>
-        Are you sure you want to delete this certificate type? This cannot be
-        undone.
-    </p>
+{% with %}
+    {% set nounSingular = 'certificate type' %}
+    {% set deleteUrl = url_for('certificate_types.delete', id=certificate_type.id) %}
+    {% include 'base/modals/confirm-delete.html' %}
+{% endwith %}
 
-    <div class="modal-action">
-        <form method="dialog">
-            <button class="btn">Cancel</button>
-        </form>
-        <form action="{{ url_for('certificate_types.delete', id=certificate_type.id)}}" method="post">
-            <button class="btn btn-primary" type="submit">OK</button>
-        </form>
-    </div>
-</div>
-<form class="modal-backdrop" method="dialog">
-    <button>Close</button>
-</form>
-</dialog>
 {% endblock content %}

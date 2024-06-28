@@ -26,7 +26,10 @@
         <a>Add recipients via CSV</a>
     </li>
     <li>
-        <a>Download recipient copies as ZIP</a>
+        <a>Manage recipients as one batch</a>
+    </li>
+    <li>
+        <a @click="downloadZip">Download recipient copies as ZIP</a>
     </li>
     </ul>
     </div>
@@ -52,8 +55,10 @@
     <h2 class="card-title">{{ certificate.name }}</h2>
 
     <p>
-        Issued on <span x-text="dbToHumanFriendlyDate('{{ certificate.issuance_date }}')"></span>
-        at {{ certificate.issuance_locale }}.
+        Issued on <span class="underline"
+          x-text="dbToHumanFriendlyDate('{{ certificate.issuance_date }}')">
+        </span> at
+        <span class="underline">{{ certificate.issuance_locale }}</span>.
     </p>
     
     <p>
@@ -119,26 +124,12 @@
 </ul>
 </div>
 
-<dialog class="modal" id="confirmDeleteModal">
-<div class="modal-box">
-    <p>
-        Are you sure you want to delete this certificate? This cannot be
-        undone.
-    </p>
+{% with %}
+    {% set nounSingular = 'certificate' %}
+    {% set deleteUrl = url_for('certificates.delete', id=certificate.id) %}
+    {% include 'base/modals/confirm-delete.html' %}
+{% endwith %}
 
-    <div class="modal-action">
-        <form method="dialog">
-            <button class="btn">Cancel</button>
-        </form>
-        <form action="{{ url_for('certificates.delete', id=certificate.id)}}" method="post">
-            <button class="btn btn-primary" type="submit">OK</button>
-        </form>
-    </div>
-</div>
-<form class="modal-backdrop" method="dialog">
-    <button>Close</button>
-</form>
-</dialog>
 {% endblock content %}
 
 {% block scripts %}
@@ -147,6 +138,13 @@ let dbToHumanFriendlyDate = (dbDate) => {
     return luxon.DateTime.fromISO(dbDate).toLocaleString(
         luxon.DateTime.DATE_FULL
     )
+}
+
+let downloadZip = (event) => {
+    fetch("{{ url_for('certificates.zip', id=certificate.id) }}")
+    .then(r => {
+        console.log(r)
+    })
 }
 </script>
 {% endblock scripts %}
