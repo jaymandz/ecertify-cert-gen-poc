@@ -1,3 +1,11 @@
+{% if template %}
+{% set topUrl = url_for('templates.show', id=template.id) %}
+{% set formActionUrl = url_for('templates.update', id=template.id) %}
+{% else %}
+{% set topUrl = url_for('certificate_types.show', id=certificate_type.id) %}
+{% set formActionUrl = url_for('templates.store') %}
+{% endif %}
+
 {% extends 'base/master.html' %}
 
 {% block content %}
@@ -16,14 +24,15 @@
 
 <form action="{{ formActionUrl }}" class="grid gap-y-2" id="templateForm"
   method="post">
-    {% if certificateType %}
+    {% if not template %}
     <input name="certificate_type_id" type="hidden"
-      value="{{ certificateType.id }}">
+      value="{{ certificate_type.id }}">
     {% endif %}
     <input required class="input input-bordered" name="name"
-      placeholder="Template name" type="text" value="{{ tNameValue or '' }}">
+      placeholder="Template name" type="text"
+      {% if template %}value="{{ template.name }}"{% endif %}>
     <textarea required class="resize-none textarea textarea-bordered"
       name="content" placeholder="Contents (SVG XML)"
-      rows="10">{{ tContentValue or '' }}</textarea>
+      rows="10">{% if template %}{{ template.content }}{% endif %}</textarea>
 </form>
 {% endblock content %}

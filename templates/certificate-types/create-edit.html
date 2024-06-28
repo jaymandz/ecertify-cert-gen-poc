@@ -1,8 +1,14 @@
+{% if certificate_type %}
+{% set formActionUrl = url_for('certificate_types.update', id=certificate_type.id) %}
+{% else %}
+{% set formActionUrl = url_for('certificate_types.store') %}
+{% endif %}
+
 {% extends 'base/master.html' %}
 
 {% block content %}
 <div class="mb-4">
-    {% if certificateType %}
+    {% if certificate_type %}
     <div class="tooltip tooltip-right" data-tip="To certificate type">
         <a class="btn btn-square" role="button"
           href="{{ url_for('certificate_types.show', id=certificate_type.id) }}">
@@ -29,7 +35,7 @@
   id="certificateTypeForm" method="post">
     <input required class="input input-bordered" name="name"
       placeholder="Certificate type name" type="text"
-      {% if certificateType %}value="{{ certificateType.name }}"{% endif %}>
+      {% if certificate_type %}value="{{ certificate_type.name }}"{% endif %}>
     <div class="flex mb-2">
         <button class="btn" type="button" @click="addField">
             {% include 'heroicons/plus.svg' %}
@@ -86,8 +92,8 @@
 {% block scripts %}
 <script type="text/javascript">
 let rows = Alpine.reactive([
-    {% if certificateType %}
-    {% for field in certificateType.fields %}
+    {% if certificate_type %}
+    {% for field in certificate_type.fields %}
     {
         id: {{ field.id }},
         name: '{{ field.name }}',

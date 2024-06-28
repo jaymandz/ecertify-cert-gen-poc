@@ -84,7 +84,7 @@
         <optgroup label="{{ ct.name }}">
             {% for t in ct.templates %}
             <option value="{{ t.id }}"
-              {% if certificate.template_id == t.id %}selected{% endif %}>
+              {% if certificate and certificate.template_id == t.id %}selected{% endif %}>
               {{ t.name }}</option>
             {% endfor %}
         </optgroup>

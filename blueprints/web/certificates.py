@@ -60,7 +60,7 @@ def index():
 @certificates_blueprint.get('/create')
 def create():
     return render_template(
-        'certificates/create.html',
+        'certificates/create-edit.html',
         title='Create a certificate',
         certificate_types=db.session.execute(
             db.select(CertificateType)
@@ -108,7 +108,7 @@ def show(id):
 def edit(id):
     c = db.get_or_404(Certificate, id)
     return render_template(
-        'certificates/edit.html',
+        'certificates/create-edit.html',
         title=f'Edit certificate "{c.name}"',
         certificate=c,
         certificate_types=db.session.execute(

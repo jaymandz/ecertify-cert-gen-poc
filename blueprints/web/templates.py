@@ -9,7 +9,7 @@ templates_blueprint = Blueprint('templates', __name__)
 def create():
     t = db.get_or_404(CertificateType, request.args.get('certificate_type_id'))
     return render_template(
-        'templates/create.html',
+        'templates/create-edit.html',
         title='Create a template',
         certificate_type=t,
     )
@@ -39,7 +39,7 @@ def show(id):
 def edit(id):
     t = db.get_or_404(Template, id)
     return render_template(
-        'templates/edit.html',
+        'templates/create-edit.html',
         title=f'Edit template "{t.name}"',
         template=t,
     )
@@ -59,4 +59,6 @@ def delete(id):
     t = db.get_or_404(Template, id)
     db.session.delete(t)
     db.session.commit()
-    return redirect(url_for('certificate_types.show', id=t.certificate_type))
+    return redirect(
+        url_for('certificate_types.show', id=t.certificate_type_id)
+    )
