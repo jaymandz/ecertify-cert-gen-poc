@@ -8,7 +8,7 @@ recipients_blueprint = Blueprint('recipients', __name__)
 def create():
     c = db.get_or_404(Certificate, request.args.get('certificate_id'))
     return render_template(
-        'recipients/create.html',
+        'recipients/create-edit.html',
         title='Create a recipient',
         certificate=c,
     )
@@ -34,4 +34,38 @@ def store():
 
 @recipients_blueprint.get('/<int:id>')
 def show(id):
-    return 'Under construction'
+    r = db.get_or_404(Recipient, id)
+    return render_template(
+        'recipients/show.html',
+        recipient=r,
+    )
+
+@recipients_blueprint.get('/<int:id>/edit')
+def edit(id):
+    r = db.get_or_404(Recipient, id)
+    return render_template(
+        'recipients/create-edit.html',
+        title='Edit a recipient',
+        recipient=r,
+    )
+
+@recipients_blueprint.post('/<int:id>')
+def update(id):
+    r = db.get_or_404(Recipient, id)
+    r.last_name = request.form['last_name']
+    r.first_name = request.form['first_name']
+    r.middle_name = request.form['middle_name']
+    r.honorific = request.form['honorific']
+    r.suffix = request.form['suffix']
+    r.organization = request.form['organization']
+    r.address = request.form['address']
+
+    db.session.commit()
+    return redirect(url_for('recipients.show', id=r.id))
+
+@recipients_blueprint.post('/<int:id>/delete')
+def delete(id):
+    r = db.get_or_404(Recipient, id)
+    db.session.delete(r)
+    db.session.commit()
+    return redirect(url_for('certificates.show', id=r.certificate_id))

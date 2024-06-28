@@ -1,0 +1,54 @@
+{% if recipient %}
+{% set topUrl = url_for('recipients.show', id=recipient.id) %}
+{% set formActionUrl = url_for('recipients.update', id=recipient.id) %}
+{% else %}
+{% set topUrl = url_for('certificates.show', id=certificate.id) %}
+{% set formActionUrl = url_for('recipients.store') %}
+{% endif %}
+
+{% extends 'base/master.html' %}
+
+{% block content %}
+<div class="mb-4">
+    <div class="tooltip tooltip-right" data-tip="To certificate">
+        <a class="btn btn-square" role="button" href="{{ topUrl }}">
+            {% include 'heroicons/arrow-uturn-left.svg' %}
+        </a>
+    </div>
+    <div class="tooltip tooltip-right" data-tip="Save">
+        <button class="btn btn-square" form="recipientForm" type="submit">
+            {% include 'heroicons/check.svg' %}
+        </button>
+    </div>
+</div>
+
+<form action="{{ formActionUrl }}" class="flex flex-col space-y-2"
+  id="recipientForm" method="post">
+    {% if not recipient %}
+    <input name="certificate_id" type="hidden" value="{{ certificate.id }}">
+    {% endif %}
+    <div class="gap-2 grid grid-cols-1 sm:grid-cols-3">
+        <input required class="input input-bordered w-full" name="last_name"
+          placeholder="Last name (required)"
+          {% if recipient %}value="{{ recipient.last_name }}"{% endif %}>
+        <input required class="input input-bordered w-full" name="first_name"
+          placeholder="First name (required)"
+          {% if recipient %}value="{{ recipient.first_name }}"{% endif %}>
+        <input class="input input-bordered w-full" name="middle_name"
+          placeholder="Middle name"
+          {% if recipient %}value="{{ recipient.middle_name }}"{% endif %}>
+    </div>
+    <input class="input input-bordered w-full" name="honorific"
+      placeholder="Honorific"
+      {% if recipient %}value="{{ recipient.honorific }}"{% endif %}>
+    <input class="input input-bordered w-full" name="suffix"
+      placeholder="Suffix"
+      {% if recipient %}value="{{ recipient.suffix }}"{% endif %}>
+    <input class="input input-bordered w-full" name="organization"
+      placeholder="Organization"
+      {% if recipient %}value="{{ recipient.organization }}"{% endif %}>
+    <input class="input input-bordered w-full" name="address"
+      placeholder="Address"
+      {% if recipient %}value="{{ recipient.address }}"{% endif %}>
+</form>
+{% endblock content %}

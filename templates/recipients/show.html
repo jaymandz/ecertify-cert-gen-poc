@@ -1,0 +1,35 @@
+{% extends 'base/master.html' %}
+
+{% block content %}
+<div class="mb-4">
+    <div class="tooltip tooltip-right" data-tip="To certificate">
+        <a class="btn btn-square" role="button"
+          href="{{ url_for('certificates.show', id=recipient.certificate_id) }}">
+            {% include 'heroicons/arrow-uturn-left.svg' %}
+        </a>
+    </div>
+    <div class="tooltip tooltip-right" data-tip="Download copy as PDF">
+        <button class="btn btn-square">
+            {% include 'heroicons/arrow-down-tray.svg' %}
+        </button>
+    </div>
+    <div class="tooltip tooltip-right" data-tip="Edit">
+        <a class="btn btn-square" role="button"
+          href="{{ url_for('recipients.edit', id=recipient.id) }}">
+            {% include 'heroicons/pencil-square.svg' %}
+        </a>
+    </div>
+    <div class="tooltip tooltip-right" data-tip="Delete">
+        <button class="btn btn-square" @click="confirmDeleteModal.showModal()">
+            {% include 'heroicons/trash.svg' %}
+        </button>
+    </div>
+</div>
+
+{% with %}
+    {% set nounSingular = 'recipient' %}
+    {% set deleteUrl = url_for('recipients.delete', id=recipient.id) %}
+    {% include 'base/modals/confirm-delete.html' %}
+{% endwith %}
+
+{% endblock content %}
