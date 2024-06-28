@@ -13,8 +13,8 @@ class CertificateType(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
 
-    templates = db.relationship('Template')
-    fields = db.relationship('CertificateTypeField')
+    templates = db.relationship('Template', viewonly=True)
+    fields = db.relationship('CertificateTypeField', viewonly=True)
 
 class CertificateTypeField(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -51,8 +51,8 @@ class Certificate(db.Model):
     issuance_locale = db.Column(db.String(255), nullable=False)
 
     template = db.relationship('Template')
-    fields = db.relationship('CertificateField')
-    recipients = db.relationship('Recipient')
+    fields = db.relationship('CertificateField', viewonly=True)
+    recipients = db.relationship('Recipient', viewonly=True)
 
 class CertificateField(db.Model):
     id = db.Column(db.Integer, primary_key=True)
