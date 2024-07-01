@@ -1,13 +1,17 @@
-import io, random, string
+import base64, io, os, random, string
 from datetime import datetime
 from xml.dom.minidom import Text, parse
 
+import qrcode
 from cairosvg import svg2pdf, svg2png
+from dotenv import load_dotenv
 from flask import (
     Blueprint, Response, redirect, render_template, request, url_for
 )
 
 from models import Certificate, Recipient, db
+
+load_dotenv(f'{os.path.dirname(__file__)}/.env')
 
 recipients_blueprint = Blueprint('recipients', __name__)
 
@@ -53,8 +57,8 @@ def create():
 @recipients_blueprint.post('/')
 def store():
     r = Recipient()
-    r.certificate_id = int(request.form['certificate_id'])
     r.token = generate_token()
+    r.certificate_id = int(request.form['certificate_id'])
     r.last_name = request.form['last_name']
     r.first_name = request.form['first_name']
     r.middle_name = request.form['middle_name']
@@ -70,27 +74,27 @@ def store():
         url_for('certificates.show', id=request.form['certificate_id'])
     )
 
-@recipients_blueprint.get('/<int:id>')
-def show(id):
-    r = db.get_or_404(Recipient, id)
+@recipients_blueprint.get('/<token>')
+def show(token):
+    r = db.get_or_404(Recipient, token)
     return render_template(
         'recipients/show.html',
         title=f'{r.last_name}, {r.first_name}',
         recipient=r,
     )
 
-@recipients_blueprint.get('/<int:id>/edit')
-def edit(id):
-    r = db.get_or_404(Recipient, id)
+@recipients_blueprint.get('/<token>/edit')
+def edit(token):
+    r = db.get_or_404(Recipient, token)
     return render_template(
         'recipients/create-edit.html',
         title='Edit a recipient',
         recipient=r,
     )
 
-@recipients_blueprint.post('/<int:id>')
-def update(id):
-    r = db.get_or_404(Recipient, id)
+@recipients_blueprint.post('/<token>')
+def update(token):
+    r = db.get_or_404(Recipient, token)
     r.last_name = request.form['last_name']
     r.first_name = request.form['first_name']
     r.middle_name = request.form['middle_name']
@@ -100,21 +104,34 @@ def update(id):
     r.address = request.form['address']
 
     db.session.commit()
-    return redirect(url_for('recipients.show', id=r.id))
+    return redirect(url_for('recipients.show', token=r.token))
 
-@recipients_blueprint.post('/<int:id>/delete')
-def delete(id):
-    r = db.get_or_404(Recipient, id)
+@recipients_blueprint.post('/<token>/delete')
+def delete(token):
+    r = db.get_or_404(Recipient, token)
     db.session.delete(r)
     db.session.commit()
     return redirect(url_for('certificates.show', id=r.certificate_id))
 
-@recipients_blueprint.get('/<int:id>/download/<format>')
-def download(id, format):
-    recipient = db.get_or_404(Recipient, id)
+@recipients_blueprint.get('/<token>/overview')
+def overview(token):
+    return 'Under construction'
+
+@recipients_blueprint.get('/<token>/pdf')
+def pdf(token):
+    recipient = db.get_or_404(Recipient, token)
     template = recipient.certificate.template
 
+    overview_url = os.getenv('ECPOC_BASE_URL')
+    overview_url += url_for('recipients.overview', token=recipient.token)
+
+    qr_stream = io.BytesIO()
+    qrcode.make(overview_url).save(qr_stream)
+    qr_stream.seek(0)
+    qr_str = base64.b64encode(qr_stream.read()).decode('ascii')
+
     svg_tree = parse(io.StringIO(template.content))
+
     for t in svg_tree.getElementsByTagName('tspan'):
         if not t.firstChild: continue
         if type(t.firstChild) is not Text: continue
@@ -140,21 +157,18 @@ def download(id, format):
             text = text.replace(f'[F:{name}]', value)
 
         t.firstChild.data = text
+    
+    for t in svg_tree.getElementsByTagName('image'):
+        if t.getAttribute('id') == 'QR_CODE':
+            t.setAttribute('xlink:href', f'data:image/png;base64,{qr_str}')
+            break
 
     svg_stream = io.BytesIO(svg_tree.toxml(encoding='UTF-8'))
 
-    if format == 'pdf':
-        pdf_stream = io.BytesIO()
-        svg2pdf(file_obj=svg_stream, write_to=pdf_stream)
+    pdf_stream = io.BytesIO()
+    svg2pdf(file_obj=svg_stream, write_to=pdf_stream)
 
-        filename = f'{recipient.last_name}, {recipient.first_name}.pdf'
-        r = Response(pdf_stream.getvalue(), mimetype='application/pdf')
-    elif format == 'png':
-        png_stream = io.BytesIO()
-        svg2png(file_obj=svg_stream, write_to=png_stream)
-
-        filename = f'{recipient.last_name}, {recipient.first_name}.png'
-        r = Response(png_stream.getvalue(), mimetype='image/png')
-
+    filename = f'{recipient.last_name}, {recipient.first_name}.pdf'
+    r = Response(pdf_stream.getvalue(), mimetype='application/pdf')
     r.headers['Content-Disposition'] = f'filename="{filename}"'
     return r

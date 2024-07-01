@@ -113,7 +113,7 @@
 <ul class="bg-base-300 menu rounded-box">
     {% for recipient in collection %}
     <li>
-        <a href="{{ url_for('recipients.show', id=recipient.id) }}">
+        <a href="{{ url_for('recipients.show', token=recipient.token) }}">
             {{ recipient.last_name }}, {{ recipient.first_name }}
             {% if recipient.middle_name %}
             <small>{{ recipient.middle_name }}</small>

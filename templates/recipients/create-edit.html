@@ -1,6 +1,6 @@
 {% if recipient %}
-{% set topUrl = url_for('recipients.show', id=recipient.id) %}
-{% set formActionUrl = url_for('recipients.update', id=recipient.id) %}
+{% set topUrl = url_for('recipients.show', token=recipient.token) %}
+{% set formActionUrl = url_for('recipients.update', token=recipient.token) %}
 {% else %}
 {% set topUrl = url_for('certificates.show', id=certificate.id) %}
 {% set formActionUrl = url_for('recipients.store') %}

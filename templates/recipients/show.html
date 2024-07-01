@@ -10,13 +10,13 @@
     </div>
     <div class="tooltip tooltip-right" data-tip="Download copy as PDF">
         <a class="btn btn-square" role="button"
-          href="{{ url_for('recipients.download', id=recipient.id, format='pdf') }}">
+          href="{{ url_for('recipients.pdf', token=recipient.token) }}">
             {% include 'heroicons/arrow-down-tray.svg' %}
         </a>
     </div>
     <div class="tooltip tooltip-right" data-tip="Edit">
         <a class="btn btn-square" role="button"
-          href="{{ url_for('recipients.edit', id=recipient.id) }}">
+          href="{{ url_for('recipients.edit', token=recipient.token) }}">
             {% include 'heroicons/pencil-square.svg' %}
         </a>
     </div>
@@ -29,7 +29,7 @@
 
 {% with %}
     {% set nounSingular = 'recipient' %}
-    {% set deleteUrl = url_for('recipients.delete', id=recipient.id) %}
+    {% set deleteUrl = url_for('recipients.delete', token=recipient.token) %}
     {% include 'base/modals/confirm-delete.html' %}
 {% endwith %}
 
