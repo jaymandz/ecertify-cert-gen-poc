@@ -9,9 +9,10 @@
         </a>
     </div>
     <div class="tooltip tooltip-right" data-tip="Download copy as PDF">
-        <button class="btn btn-square">
+        <a class="btn btn-square" role="button"
+          href="{{ url_for('recipients.download', id=recipient.id, format='pdf') }}">
             {% include 'heroicons/arrow-down-tray.svg' %}
-        </button>
+        </a>
     </div>
     <div class="tooltip tooltip-right" data-tip="Edit">
         <a class="btn btn-square" role="button"
