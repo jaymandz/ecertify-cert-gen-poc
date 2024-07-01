@@ -69,6 +69,7 @@ class CertificateField(db.Model):
 class Recipient(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     certificate_id = db.Column(db.ForeignKey(Certificate.id), nullable=False)
+    token = db.Column(db.String(13))
     last_name = db.Column(db.String(255), nullable=False)
     first_name = db.Column(db.String(255), nullable=False)
     middle_name = db.Column(db.String(255))
