@@ -28,15 +28,12 @@
     </div>
 </div>
 
-<div class="card card-bordered shadow-lg sm:card-side"
-  style="max-height: calc(100vh - 160px)">
-    <figure class="bg-base-300 *:h-full">
-        {{ template.content|safe }}
-    </figure>
-    <div class="card-body">
-        <p class="card-title">{{ template.name }}</p>
-    </div>
-</div>
+{% with %}
+    {% set svgContent = template.content|safe %}
+    {% set label = template.name %}
+    {% set style = 'max-height: calc(100vh - 160px)' %}
+    {% include 'base/cards/certificate.html' %}
+{% endwith %}
 
 {% with %}
     {% set nounSingular = 'template' %}
