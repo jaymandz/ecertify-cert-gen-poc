@@ -23,6 +23,52 @@ def complete_name(recipient):
     if recipient.suffix: cn += f', {recipient.suffix}'
     return cn
 
+def recipient_copy_svg_stream(recipient):
+    template = recipient.certificate.template
+
+    overview_url = os.getenv('ECPOC_BASE_URL')
+    overview_url += url_for('recipients.overview', token=recipient.token)
+
+    qr_stream = io.BytesIO()
+    qrcode.make(overview_url).save(qr_stream)
+    qr_stream.seek(0)
+    qr_str = base64.b64encode(qr_stream.read()).decode('ascii')
+
+    svg_tree = parse(io.StringIO(template.content))
+
+    for t in svg_tree.getElementsByTagName('tspan'):
+        if not t.firstChild: continue
+        if type(t.firstChild) is not Text: continue
+
+        text = t.firstChild.data
+
+        text = text.replace('[ISSUANCE_DATE]',
+          issuance_date_strftime(recipient.certificate.issuance_date))
+        text = text.replace('[ISSUANCE_LOCALE]',
+          recipient.certificate.issuance_locale)
+        
+        text = text.replace('[RECIPIENT:COMPLETE_NAME]',
+          complete_name(recipient))
+        text = text.replace('[R:CN]', complete_name(recipient))
+
+        for field in recipient.certificate.fields:
+            name = field.certificate_type_field.name
+            value = field.value \
+              if field.certificate_type_field.value_type.value == 'text' else \
+              date_strftime(field.value)
+
+            text = text.replace(f'[FIELD:{name}]', value)
+            text = text.replace(f'[F:{name}]', value)
+
+        t.firstChild.data = text
+    
+    for t in svg_tree.getElementsByTagName('image'):
+        if t.getAttribute('id') == 'QR_CODE':
+            t.setAttribute('xlink:href', f'data:image/png;base64,{qr_str}')
+            break
+
+    return io.BytesIO(svg_tree.toxml(encoding='UTF-8'))
+
 def date_strftime(dv):
     date_format = '%B '+str(dv.day)+', %Y'
     return datetime.strptime(dv, '%Y-%m-%d').strftime(date_format)
@@ -79,7 +125,7 @@ def show(token):
     r = db.get_or_404(Recipient, token)
     return render_template(
         'recipients/show.html',
-        title=f'{r.last_name}, {r.first_name}',
+        title=f'{r.last_name}, {r.first_name} ({r.token})',
         recipient=r,
     )
 
@@ -120,50 +166,7 @@ def overview(token):
 @recipients_blueprint.get('/<token>/pdf')
 def pdf(token):
     recipient = db.get_or_404(Recipient, token)
-    template = recipient.certificate.template
-
-    overview_url = os.getenv('ECPOC_BASE_URL')
-    overview_url += url_for('recipients.overview', token=recipient.token)
-
-    qr_stream = io.BytesIO()
-    qrcode.make(overview_url).save(qr_stream)
-    qr_stream.seek(0)
-    qr_str = base64.b64encode(qr_stream.read()).decode('ascii')
-
-    svg_tree = parse(io.StringIO(template.content))
-
-    for t in svg_tree.getElementsByTagName('tspan'):
-        if not t.firstChild: continue
-        if type(t.firstChild) is not Text: continue
-
-        text = t.firstChild.data
-
-        text = text.replace('[ISSUANCE_DATE]',
-          issuance_date_strftime(recipient.certificate.issuance_date))
-        text = text.replace('[ISSUANCE_LOCALE]',
-          recipient.certificate.issuance_locale)
-        
-        text = text.replace('[RECIPIENT:COMPLETE_NAME]',
-          complete_name(recipient))
-        text = text.replace('[R:CN]', complete_name(recipient))
-
-        for field in recipient.certificate.fields:
-            name = field.certificate_type_field.name
-            value = field.value \
-              if field.certificate_type_field.value_type.value == 'text' else \
-              date_strftime(field.value)
-
-            text = text.replace(f'[FIELD:{name}]', value)
-            text = text.replace(f'[F:{name}]', value)
-
-        t.firstChild.data = text
-    
-    for t in svg_tree.getElementsByTagName('image'):
-        if t.getAttribute('id') == 'QR_CODE':
-            t.setAttribute('xlink:href', f'data:image/png;base64,{qr_str}')
-            break
-
-    svg_stream = io.BytesIO(svg_tree.toxml(encoding='UTF-8'))
+    svg_stream = recipient_copy_svg_stream(recipient)
 
     pdf_stream = io.BytesIO()
     svg2pdf(file_obj=svg_stream, write_to=pdf_stream)
