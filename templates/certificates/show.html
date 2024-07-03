@@ -29,7 +29,7 @@
         <a>Manage recipients as one batch</a>
     </li>
     <li>
-        <a @click="downloadZip">Download recipient copies as ZIP</a>
+        <a @click="createZip">Download recipient copies as ZIP</a>
     </li>
     </ul>
     </div>
@@ -140,11 +140,26 @@ let dbToHumanFriendlyDate = (dbDate) => {
     )
 }
 
-let downloadZip = (event) => {
-    fetch("{{ url_for('certificates.zip', id=certificate.id) }}")
-    .then(r => {
-        console.log(r)
+let createZip = (event) => {
+    let zipFilename
+
+    fetch("{{ url_for('api.certificates.show', id=certificate.id) }}")
+    .then(r => r.json())
+    .then(async data => {
+        zipFilename = data.name
+
+        let certZip = new JSZip()
+        for (t in data.recipients)
+        {
+            let r = data.recipients[t]
+            await fetch("{{ url_for('index') }}recipients/"+r.token+"/pdf")
+            .then(r => r.blob())
+            .then(blob => { certZip = certZip.file(r.token+'.pdf', blob) })
+        }
+
+        return certZip.generateAsync({ type: 'blob' })
     })
+    .then(content => { saveAs(content, zipFilename+'.zip') })
 }
 </script>
 {% endblock scripts %}
