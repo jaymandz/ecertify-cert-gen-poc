@@ -116,7 +116,7 @@
         <a href="{{ url_for('recipients.show', token=recipient.token) }}">
             {{ recipient.last_name }}, {{ recipient.first_name }}
             {% if recipient.middle_name %}
-            <small>{{ recipient.middle_name }}</small>
+            {{ recipient.middle_name }}
             {% endif %}
         </a>
     </li>
