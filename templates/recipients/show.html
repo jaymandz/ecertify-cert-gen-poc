@@ -27,6 +27,37 @@
     </div>
 </div>
 
+<div class="card card-compact mb-4 shadow-lg">
+<div class="card-body">
+    <h2 class="card-title">
+        {% if recipient.honorific %}{{ recipient.honorific }}{% endif %}
+        {{ recipient.last_name }}, {{ recipient.first_name }}
+        {% if recipient.middle_name and recipient.suffix %}
+        {{ recipient.middle_name }}, {{ recipient.suffix }}
+        {% elif recipient.middle_name %}
+        {{ recipient.middle_name}}
+        {% endif %}
+    </h2>
+    <p>
+        {% if recipient.organization %}
+        {{ recipient.organization }}
+        {% else %}
+        <em>No organization given</em>
+        {% endif %}
+        <br>
+        {% if recipient.address %}{{ recipient.address }}
+        {% else %}<em>No address given</em>{% endif %}
+    </p>
+</div>
+</div>
+
+{% with %}
+    {% set svgContent = svg_text|safe %}
+    {% set label = recipient.certificate.template.certificate_type.name %}
+    {% set style = 'max-height: calc(100vh - 356px)' %}
+    {% include 'base/cards/certificate.html' %}
+{% endwith %}
+
 {% with %}
     {% set nounSingular = 'recipient' %}
     {% set deleteUrl = url_for('recipients.delete', token=recipient.token) %}

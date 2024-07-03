@@ -23,7 +23,7 @@ def complete_name(recipient):
     if recipient.suffix: cn += f', {recipient.suffix}'
     return cn
 
-def recipient_copy_svg_stream(recipient):
+def recipient_copy_svg_bytestr(recipient):
     template = recipient.certificate.template
 
     overview_url = os.getenv('ECPOC_BASE_URL')
@@ -67,7 +67,7 @@ def recipient_copy_svg_stream(recipient):
             t.setAttribute('xlink:href', f'data:image/png;base64,{qr_str}')
             break
 
-    return io.BytesIO(svg_tree.toxml(encoding='UTF-8'))
+    return svg_tree.toxml(encoding='UTF-8')
 
 def date_strftime(dv):
     date_format = '%B '+str(dv.day)+', %Y'
@@ -127,6 +127,7 @@ def show(token):
         'recipients/show.html',
         title=f'{r.last_name}, {r.first_name} ({r.token})',
         recipient=r,
+        svg_text=recipient_copy_svg_bytestr(r).decode('UTF-8'),
     )
 
 @recipients_blueprint.get('/<token>/edit')
@@ -166,7 +167,7 @@ def overview(token):
 @recipients_blueprint.get('/<token>/pdf')
 def pdf(token):
     recipient = db.get_or_404(Recipient, token)
-    svg_stream = recipient_copy_svg_stream(recipient)
+    svg_stream = io.BytesIO(recipient_copy_svg_bytestr(recipient))
 
     pdf_stream = io.BytesIO()
     svg2pdf(file_obj=svg_stream, write_to=pdf_stream)
