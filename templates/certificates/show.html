@@ -143,6 +143,11 @@ let dbToHumanFriendlyDate = (dbDate) => {
 let createZip = (event) => {
     let zipFilename
 
+    let key = toastMaster.pushItem({
+        loading: true,
+        message: 'Downloading recipient copies and compiling them into a ZIP file&hellip;',
+    })
+
     fetch("{{ url_for('api.certificates.show', id=certificate.id) }}")
     .then(r => r.json())
     .then(async data => {
@@ -159,7 +164,10 @@ let createZip = (event) => {
 
         return certZip.generateAsync({ type: 'blob' })
     })
-    .then(content => { saveAs(content, zipFilename+'.zip') })
+    .then(content => {
+        saveAs(content, zipFilename+'.zip')
+        toastMaster.removeItem(key)
+    })
 }
 </script>
 {% endblock scripts %}
