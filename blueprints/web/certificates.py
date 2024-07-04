@@ -69,6 +69,14 @@ def create():
 
 @certificates_blueprint.post('/')
 def store():
+    ec = db.session.execute(
+        db.select(Certificate).where(Certificate.name==request.form['name'])
+    ).scalar_one_or_none()
+    if ec: return redirect(url_for(
+        'certificates.create',
+        errors=['name-taken'],
+    ))
+
     c = Certificate()
     c.template_id = int(request.form['template_id'])
     c.name = request.form['name']
@@ -118,6 +126,16 @@ def edit(id):
 
 @certificates_blueprint.post('/<int:id>')
 def update(id):
+    ec = db.session.execute(db.select(Certificate).where(and_(
+        Certificate.id!=id,
+        Certificate.name==request.form['name']),
+    )).scalar_one_or_none()
+    if ec: return redirect(url_for(
+        'certificates.edit',
+        id=id,
+        errors=['name-taken'],
+    ))
+
     c = db.get_or_404(Certificate, id)
 
     c.template_id = request.form['template_id']
