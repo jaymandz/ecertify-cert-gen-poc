@@ -1,5 +1,5 @@
 from flask import Blueprint, redirect, render_template, request, url_for
-from sqlalchemy import func
+from sqlalchemy import and_, func
 
 from models import CertificateType, CertificateTypeField, db
 
@@ -95,10 +95,21 @@ def edit(id):
         'certificate-types/create-edit.html',
         title=f'Edit certificate type "{t.name}"',
         certificate_type=t,
+        errors=request.args.getlist('errors'),
     )
 
 @certificate_types_blueprint.post('/<int:id>')
 def update(id):
+    et = db.session.execute(db.select(CertificateType).where(and_(
+        CertificateType.id!=id,
+        CertificateType.name==request.form['name'],
+    ))).scalar_one_or_none()
+    if et: return redirect(url_for(
+        'certificate_types.edit',
+        id=id,
+        errors=['certificate-type-name-taken'],
+    ))
+
     t = db.get_or_404(CertificateType, id)
     t.name = request.form['name']
 
