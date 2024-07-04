@@ -91,7 +91,7 @@
 
 {% block scripts %}
 
-{% if 'certificate-type-name-taken' in errors %}
+{% if 'name-taken' in errors %}
 <script type="text/javascript">
 toastMaster.pushItem({
     alertType: 'warning',
