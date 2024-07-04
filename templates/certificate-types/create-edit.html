@@ -90,6 +90,16 @@
 {% endblock content %}
 
 {% block scripts %}
+
+{% if 'certificate-type-name-taken' in errors %}
+<script type="text/javascript">
+toastMaster.pushItem({
+    alertType: 'warning',
+    message: 'The certificate type name is already taken.',
+})
+</script>
+{% endif %}
+
 <script type="text/javascript">
 let rows = Alpine.reactive([
     {% if certificate_type %}

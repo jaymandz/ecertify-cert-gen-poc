@@ -55,10 +55,19 @@ def create():
     return render_template(
         'certificate-types/create-edit.html',
         title='Create a certificate type',
+        errors=request.args.getlist('errors'),
     )
 
 @certificate_types_blueprint.post('/')
 def store():
+    et = db.session.execute(db.select(CertificateType).where(
+        CertificateType.name==request.form['name']
+    )).scalar_one_or_none()
+    if et: return redirect(url_for(
+        'certificate_types.create',
+        errors=['certificate-type-name-taken'],
+    ))
+
     t = CertificateType()
     t.name = request.form['name']
 
