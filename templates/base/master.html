@@ -88,14 +88,21 @@ let toastMaster = {
     {% block content %}{% endblock %}
 </div>
 
+{# TODO: Make toasts display better on mobile! #}
 <div class="toast toast-top">
 <template x-for="item in toastMaster.items">
-    <div :class="toastMaster.alertClass(item)">
-        <template x-if="item.body.loading">
-            <span class="loading loading-spinner"></span>
-        </template>
-        <div x-html="item.body.message"></div>
-    </div>
+<div :class="toastMaster.alertClass(item)">
+    <template x-if="item.body.loading">
+        <span class="loading loading-infinity"></span>
+    </template>
+    <div x-html="item.body.message"></div>
+    <template x-if="! item.body.loading">
+        <button class="btn btn-ghost btn-sm btn-square"
+          @click="toastMaster.removeItem(item.key)">
+            {% include 'heroicons/x-mark.svg' %}
+        </button>
+    </template>
+</div>
 </template>
 </div>
 
