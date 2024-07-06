@@ -47,7 +47,7 @@ def update_fields(certificate):
 @certificates_blueprint.get('/')
 def index():
     collection = db.select(Certificate).where(
-        Certificate.name.ilike(f'%{request.args.get('q', '')}%')
+        Certificate.name.ilike(f'%{request.args.get("q", "")}%')
     )
 
     return render_template(
@@ -96,13 +96,13 @@ def show(id):
 
     collection = db.select(Recipient). \
         where(Recipient.certificate_id==c.id).where(or_(
-            Recipient.last_name.ilike(f'%{request.args.get('q', '')}%'),
-            Recipient.first_name.ilike(f'%{request.args.get('q', '')}%'),
-            Recipient.middle_name.ilike(f'%{request.args.get('q', '')}%'),
-            Recipient.honorific.ilike(f'%{request.args.get('q', '')}%'),
-            Recipient.suffix.ilike(f'%{request.args.get('q', '')}%'),
-            Recipient.organization.ilike(f'%{request.args.get('q', '')}%'),
-            Recipient.address.ilike(f'%{request.args.get('q', '')}%'),
+            Recipient.last_name.ilike(f'%{request.args.get("q", "")}%'),
+            Recipient.first_name.ilike(f'%{request.args.get("q", "")}%'),
+            Recipient.middle_name.ilike(f'%{request.args.get("q", "")}%'),
+            Recipient.honorific.ilike(f'%{request.args.get("q", "")}%'),
+            Recipient.suffix.ilike(f'%{request.args.get("q", "")}%'),
+            Recipient.organization.ilike(f'%{request.args.get("q", "")}%'),
+            Recipient.address.ilike(f'%{request.args.get("q", "")}%'),
         ))
 
     return render_template(

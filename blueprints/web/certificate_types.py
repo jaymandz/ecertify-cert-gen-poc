@@ -40,7 +40,7 @@ def save_fields(t):
 @certificate_types_blueprint.get('/')
 def index():
     collection = db.select(CertificateType).where(
-        CertificateType.name.ilike(f'%{request.args.get('q', '')}%')
+        CertificateType.name.ilike(f'%{request.args.get("q", "")}%')
     )
 
     return render_template(
