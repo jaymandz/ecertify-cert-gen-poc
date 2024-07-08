@@ -66,3 +66,16 @@
 </div>
 {% endif %}
 {% endblock content %}
+
+{% block scripts %}
+
+{% if 'delete-success' in messages %}
+<script type="text/javascript">
+toastMaster.pushItem({
+    alertType: 'error',
+    message: 'The {{ nounSingular }} was successfully deleted.',
+})
+</script>
+{% endif %}
+
+{% endblock scripts %}

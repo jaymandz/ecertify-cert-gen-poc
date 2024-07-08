@@ -159,7 +159,18 @@ def update(id):
 
 @certificates_blueprint.post('/<int:id>/delete')
 def delete(id):
-    return 'Under construction'
+    c = db.get_or_404(Certificate, id)
+
+    db.session.execute(db.delete(CertificateField).where(
+        CertificateField.certificate_id==c.id
+    ))
+
+    db.session.delete(c)
+    db.session.commit()
+    return redirect(url_for(
+        'certificates.index',
+        messages=['delete-success'],
+    ))
 
 @certificates_blueprint.get('/<int:id>/csv')
 def recipients_csv_upload(id):
