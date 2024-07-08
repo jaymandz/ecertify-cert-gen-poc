@@ -1,5 +1,6 @@
 from flask import Blueprint, redirect, render_template, request, url_for
 from sqlalchemy import and_, func
+from sqlalchemy.exc import IntegrityError
 
 from models import CertificateType, CertificateTypeField, db
 
@@ -76,7 +77,10 @@ def store():
     save_fields(t)
     
     db.session.commit()
-    return redirect(url_for('certificate_types.index'))
+    return redirect(url_for(
+        'certificate_types.index',
+        messages=['store-success'],
+    ))
 
 @certificate_types_blueprint.get('/<int:id>')
 def show(id):
@@ -114,10 +118,36 @@ def update(id):
     save_fields(t)
 
     db.session.commit()
-    return redirect(url_for('certificate_types.show', id=id))
+    return redirect(url_for(
+        'certificate_types.show',
+        id=id,
+        messages=['update-success'],
+    ))
 
 @certificate_types_blueprint.post('/<int:id>/delete')
 def delete(id):
-    db.session.delete(db.get_or_404(CertificateType, id))
+    t = db.get_or_404(CertificateType, id)
+
+    try:
+        # Delete the certificate type fields first
+        db.session.execute(db.delete(CertificateTypeField).where(
+            CertificateTypeField.certificate_type_id==t.id
+        ))
+        # Then the templates
+        db.session.execute(db.delete(Template).where(
+            Template.certificate_type_id==t.id
+        ))
+        # And finally the certificate type itself
+        db.session.delete(t)
+    except IntegrityError:
+        # The fields or templates are being used by at least one certificate
+        return redirect(url_for(
+            'certificate_types.index',
+            messages=['delete-failed'],
+        ))
+
     db.session.commit()
-    return redirect(url_for('certificate_types.index'))
+    return redirect(url_for(
+        'certificate_types.index',
+        messages=['delete-success'],
+    ))

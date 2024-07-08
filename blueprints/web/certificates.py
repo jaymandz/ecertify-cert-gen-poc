@@ -88,7 +88,10 @@ def store():
     insert_fields(c)
 
     db.session.commit()
-    return redirect(url_for('certificates.index'))
+    return redirect(url_for(
+        'certificates.index',
+        messages=['store-success'],
+    ))
 
 @certificates_blueprint.get('/<int:id>')
 def show(id):
@@ -155,17 +158,27 @@ def update(id):
         insert_fields(c)
 
     db.session.commit()
-    return redirect(url_for('certificates.show', id=c.id))
+    return redirect(url_for(
+        'certificates.show',
+        id=c.id,
+        messages=['update-success'],
+    ))
 
 @certificates_blueprint.post('/<int:id>/delete')
 def delete(id):
     c = db.get_or_404(Certificate, id)
 
+    # Delete the certificate fields first
     db.session.execute(db.delete(CertificateField).where(
         CertificateField.certificate_id==c.id
     ))
-
+    # Then the recipients
+    db.session.execute(db.delete(Recipient).where(
+        Recipient.certificate_id==c.id
+    ))
+    # And finally the certificate itself
     db.session.delete(c)
+
     db.session.commit()
     return redirect(url_for(
         'certificates.index',
