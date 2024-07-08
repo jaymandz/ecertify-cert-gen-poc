@@ -23,7 +23,9 @@
         </a>
     </li>
     <li>
-        <a>Add recipients via CSV</a>
+        <a href="{{ url_for('certificates.recipients_csv_upload', id=certificate.id) }}">
+            Add recipients via CSV
+        </a>
     </li>
     <li>
         <a>Manage recipients as one batch</a>

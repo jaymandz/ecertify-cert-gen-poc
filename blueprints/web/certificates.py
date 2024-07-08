@@ -161,6 +161,17 @@ def update(id):
 def delete(id):
     return 'Under construction'
 
-@certificates_blueprint.post('/<int:id>/zip')
-def zip(id):
-    return 'Under construction'
+@certificates_blueprint.get('/<int:id>/csv')
+def recipients_csv_upload(id):
+    c = db.get_or_404(Certificate, id)
+    return render_template(
+        'certificates/recipients-csv.html',
+        title=f'Add recipients for certificate "{c.name}" through CSV',
+        certificate=c,
+    )
+
+@certificates_blueprint.post('/<int:id>/csv')
+def recipients_csv_store(id):
+    c = db.get_or_404(Certificate, id)
+    # TODO: Saving functionality
+    return redirect(url_for('certificates.show', id=c.id))
