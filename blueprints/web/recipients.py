@@ -158,7 +158,11 @@ def delete(token):
     r = db.get_or_404(Recipient, token)
     db.session.delete(r)
     db.session.commit()
-    return redirect(url_for('certificates.show', id=r.certificate_id))
+    return redirect(url_for(
+        'certificates.show',
+        id=r.certificate_id,
+        messages=['recipient-delete-success'],
+    ))
 
 @recipients_blueprint.get('/<token>/overview')
 def overview(token):

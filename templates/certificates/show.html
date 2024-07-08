@@ -137,6 +137,16 @@
 {% endblock content %}
 
 {% block scripts %}
+
+{% if 'recipient-delete-success' in messages %}
+<script type="text/javascript">
+toastMaster.pushItem({
+    alertType: 'success',
+    message: 'The recipient was successfully deleted.',
+})
+</script>
+{% endif %}
+
 <script type="text/javascript">
 let dbToHumanFriendlyDate = (dbDate) => {
     return luxon.DateTime.fromISO(dbDate).toLocaleString(
