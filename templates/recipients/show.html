@@ -8,10 +8,11 @@
             {% include 'heroicons/arrow-uturn-left.svg' %}
         </a>
     </div>
-    <div class="tooltip tooltip-right" data-tip="Download copy as PDF">
+    <div class="tooltip tooltip-right" data-tip="View PDF in new tab">
         <a class="btn btn-square" role="button"
-          href="{{ url_for('recipients.pdf', token=recipient.token) }}">
-            {% include 'heroicons/arrow-down-tray.svg' %}
+          href="{{ url_for('recipients.pdf', token=recipient.token) }}"
+          target="_blank">
+            {% include 'heroicons/document-text.svg' %}
         </a>
     </div>
     <div class="tooltip tooltip-right" data-tip="Edit">
