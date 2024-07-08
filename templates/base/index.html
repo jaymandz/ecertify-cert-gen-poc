@@ -8,9 +8,10 @@
         </a>
     </div>
     <div class="tooltip tooltip-right" data-tip="Reload page">
-        <button class="btn btn-square" @click="location.reload()">
+        <a class="btn btn-square" role="button"
+          href="{{ url_for(indexUrlString) }}">
             {% include 'heroicons/arrow-path.svg' %}
-        </button>
+        </a>
     </div>
 </div>
 
