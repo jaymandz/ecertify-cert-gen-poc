@@ -91,7 +91,7 @@
 
 {% block scripts %}
 
-{% if 'name-taken' in errors %}
+{% if 'name-taken' in messages %}
 <script type="text/javascript">
 toastMaster.pushItem({
     alertType: 'warning',

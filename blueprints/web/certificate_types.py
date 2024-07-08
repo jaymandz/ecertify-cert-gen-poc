@@ -64,7 +64,7 @@ def store():
     )).scalar_one_or_none()
     if et: return redirect(url_for(
         'certificate_types.create',
-        errors=['name-taken'],
+        messages=['name-taken'],
     ))
 
     t = CertificateType()
@@ -105,7 +105,7 @@ def update(id):
     if et: return redirect(url_for(
         'certificate_types.edit',
         id=id,
-        errors=['name-taken'],
+        messages=['name-taken'],
     ))
 
     t = db.get_or_404(CertificateType, id)

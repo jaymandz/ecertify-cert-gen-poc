@@ -74,7 +74,7 @@ def store():
     ).scalar_one_or_none()
     if ec: return redirect(url_for(
         'certificates.create',
-        errors=['name-taken'],
+        messages=['name-taken'],
     ))
 
     c = Certificate()
@@ -133,7 +133,7 @@ def update(id):
     if ec: return redirect(url_for(
         'certificates.edit',
         id=id,
-        errors=['name-taken'],
+        messages=['name-taken'],
     ))
 
     c = db.get_or_404(Certificate, id)
