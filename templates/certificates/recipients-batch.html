@@ -1,0 +1,34 @@
+{% extends 'base/master.html' %}
+
+{% block content %}
+<div class="mb-4">
+    <div class="tooltip tooltip-right" data-tip="To certificate">
+        <a class="btn btn-square" role="button"
+          href="{{ url_for('certificates.show', id=certificate.id) }}">
+            {% include 'heroicons/arrow-uturn-left.svg' %}
+        </a>
+    </div>
+    <div class="tooltip tooltip-right" data-tip="Add a recipient">
+        <button class="btn btn-square" @click="addRecipient">
+            {% include 'heroicons/plus.svg' %}
+        </button>
+    </div>
+    <div class="tooltip tooltip-right" data-tip="Save">
+        <button class="btn btn-square" form="batchForm" type="submit">
+            {% include 'heroicons/check.svg' %}
+        </button>
+    </div>
+</div>
+
+<form action="{{ url_for('certificates.recipients_batch_update', id=certificate.id) }}"
+  class="flex flex-col space-y-2" id="batchForm" method="post">
+</form>
+{% endblock content %}
+
+{% block scripts %}
+<script type="text/javascript">
+let addRecipient = (event) => {
+    //
+}
+</script>
+{% endblock scripts %}

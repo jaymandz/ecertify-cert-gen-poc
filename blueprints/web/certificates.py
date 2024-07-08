@@ -175,3 +175,17 @@ def recipients_csv_store(id):
     c = db.get_or_404(Certificate, id)
     # TODO: Saving functionality
     return redirect(url_for('certificates.show', id=c.id))
+
+@certificates_blueprint.get('/<int:id>/batch')
+def recipients_batch_edit(id):
+    c = db.get_or_404(Certificate, id)
+    return render_template(
+        'certificates/recipients-batch.html',
+        title=f'Edit recipients of certificate "{c.name}" as a batch',
+        certificate=c,
+    )
+
+@certificates_blueprint.post('/<int:id>/batch')
+def recipients_batch_update(id):
+    c = db.get_or_404(Certificate, id)
+    return redirect(url_for('certificates.show', id=c.id))

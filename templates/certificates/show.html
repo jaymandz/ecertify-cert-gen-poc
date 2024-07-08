@@ -28,7 +28,9 @@
         </a>
     </li>
     <li>
-        <a>Manage recipients as one batch</a>
+        <a href="{{ url_for('certificates.recipients_batch_edit', id=certificate.id) }}">
+            Manage recipients as one batch
+        </a>
     </li>
     <li>
         <a @click="createZip">Download recipient copies as ZIP</a>
