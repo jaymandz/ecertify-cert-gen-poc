@@ -2,39 +2,51 @@ from flask import Blueprint, redirect, render_template, request, url_for
 from sqlalchemy import and_, func
 from sqlalchemy.exc import IntegrityError
 
-from models import CertificateType, CertificateTypeField, db
+from models import CertificateType, CertificateTypeField, Template, db
 
 certificate_types_blueprint = Blueprint('certificate_types', __name__)
 
-def save_fields(t):
-    field_ids = [ int(id) for id in request.form.getlist('field-ids') ]
+if request:
     field_names = request.form.getlist('field-names')
     field_descriptions = request.form.getlist('field-descriptions')
     field_value_types = request.form.getlist('field-value-types')
     field_required_flags = request.form.getlist('field-required-flags')
+
+def add_field(t, index):
+    f = CertificateTypeField()
+    f.certificate_type_id = t.id
+    f.name = field_names[index]
+    f.description = field_descriptions[index]
+    f.value_type = field_value_types[index]
+
+    try:
+        f.is_required = field_required_flags[index] == 'true'
+    except IndexError:
+        f.is_required = False
+
+    db.session.add(f)
+
+def edit_field(t, index):
+    f = db.get_or_404(CertificateTypeField, id)
+    f.certificate_type_id = t.id
+    f.name = field_names[index]
+    f.description = field_descriptions[index]
+    f.value_type = field_value_types[index]
+
+    try:
+        f.is_required = field_required_flags[index] == 'true'
+    except IndexError:
+        f.is_required = False
+
+def save_fields(t):
+    field_ids = [ int(id) for id in request.form.getlist('field-ids') ]
     field_statuses = request.form.getlist('field-statuses')
 
     for index, id in enumerate(field_ids):
         if field_statuses[index] == 'to-add':
-            f = CertificateTypeField()
-            f.certificate_type_id = t.id
-            f.name = field_names[index]
-            f.description = field_descriptions[index]
-            f.value_type = field_value_types[index]
-
-            try: f.is_required = field_required_flags[index] == 'true'
-            except IndexError: f.is_required = False
-
-            db.session.add(f)
+            add_field(t, index)
         elif field_statuses[index] == 'to-edit':
-            f = db.get_or_404(CertificateTypeField, id)
-            f.certificate_type_id = t.id
-            f.name = field_names[index]
-            f.description = field_descriptions[index]
-            f.value_type = field_value_types[index]
-
-            try: f.is_required = field_required_flags[index] == 'true'
-            except IndexError: f.is_required = False
+            edit_field(t, index)
         elif field_statuses[index] == 'to-delete':
             db.session.delete(db.get_or_404(CertificateTypeField, id))
 
@@ -63,10 +75,11 @@ def store():
     et = db.session.execute(db.select(CertificateType).where(
         CertificateType.name==request.form['name']
     )).scalar_one_or_none()
-    if et: return redirect(url_for(
-        'certificate_types.create',
-        messages=['name-taken'],
-    ))
+    if et:
+        return redirect(url_for(
+            'certificate_types.create',
+            messages=['name-taken'],
+        ))
 
     t = CertificateType()
     t.name = request.form['name']
@@ -106,11 +119,12 @@ def update(id):
         CertificateType.id!=id,
         CertificateType.name==request.form['name'],
     ))).scalar_one_or_none()
-    if et: return redirect(url_for(
-        'certificate_types.edit',
-        id=id,
-        messages=['name-taken'],
-    ))
+    if et:
+        return redirect(url_for(
+            'certificate_types.edit',
+            id=id,
+            messages=['name-taken'],
+        ))
 
     t = db.get_or_404(CertificateType, id)
     t.name = request.form['name']

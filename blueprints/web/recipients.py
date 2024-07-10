@@ -1,9 +1,14 @@
-import base64, io, os, random, string
+import base64
+import io
+import os
+import random
+import string
+
 from datetime import datetime
 from xml.dom.minidom import Text, parse
 
 import qrcode
-from cairosvg import svg2pdf, svg2png
+from cairosvg import svg2pdf
 from dotenv import load_dotenv
 from flask import (
     Blueprint, Response, redirect, render_template, request, url_for
@@ -17,10 +22,13 @@ recipients_blueprint = Blueprint('recipients', __name__)
 
 def complete_name(recipient):
     cn = recipient.last_name
-    if recipient.middle_name: cn = f'{recipient.middle_name} {cn}'
+    if recipient.middle_name:
+        cn = f'{recipient.middle_name} {cn}'
     cn = f'{recipient.first_name} {cn}'
-    if recipient.honorific: cn = f'{recipient.honorific} {cn}'
-    if recipient.suffix: cn += f', {recipient.suffix}'
+    if recipient.honorific:
+        cn = f'{recipient.honorific} {cn}'
+    if recipient.suffix:
+        cn += f', {recipient.suffix}'
     return cn
 
 def recipient_copy_svg_bytestr(recipient):
@@ -37,8 +45,10 @@ def recipient_copy_svg_bytestr(recipient):
     svg_tree = parse(io.StringIO(template.content))
 
     for t in svg_tree.getElementsByTagName('tspan'):
-        if not t.firstChild: continue
-        if type(t.firstChild) is not Text: continue
+        if not t.firstChild:
+            continue
+        if type(t.firstChild) is not Text:
+            continue
 
         text = t.firstChild.data
 
@@ -76,17 +86,22 @@ def date_strftime(dv):
 def generate_token():
     while True:
         token = ''.join(random.choice(string.ascii_letters) for _ in range(13))
-        if not db.session.execute(
-            db.select(Recipient).where(Recipient.token==token)
-        ).scalar_one_or_none(): break
+        query = db.select(Recipient).where(Recipient.token==token)
+        if not db.session.execute(query).scalar_one_or_none():
+            break
+
     return token
 
 def issuance_date_strftime(d):
     ordinal = str(d.day)
-    if d.day != 11 and d.day % 10 == 1: ordinal += 'st'
-    elif d.day != 12 and d.day % 10 == 2: ordinal += 'nd'
-    elif d.day != 13 and d.day % 10 == 3: ordinal += 'rd'
-    else: ordinal += 'th'
+    if d.day != 11 and d.day % 10 == 1:
+        ordinal += 'st'
+    elif d.day != 12 and d.day % 10 == 2:
+        ordinal += 'nd'
+    elif d.day != 13 and d.day % 10 == 3:
+        ordinal += 'rd'
+    else:
+        ordinal += 'th'
 
     date_format = ordinal+' day of %B %Y'
     return d.strftime(date_format)

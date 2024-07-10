@@ -21,7 +21,8 @@ def insert_fields(certificate):
     ).scalar_one().certificate_type_id
 
     for field_name in request.form:
-        if not re.match('field__', field_name): continue
+        if not re.match('field__', field_name):
+            continue
 
         tf = db.session.execute(db.select(CertificateTypeField).where(and_(
             CertificateTypeField.certificate_type_id == ctype_id,
@@ -36,7 +37,8 @@ def insert_fields(certificate):
 
 def update_fields(certificate):
     for field_name in request.form:
-        if not re.match('field__', field_name): continue
+        if not re.match('field__', field_name):
+            continue
 
         cf = db.session.execute(db.select(CertificateField).where(and_(
             CertificateField.certificate_id == certificate.id,
@@ -72,10 +74,11 @@ def store():
     ec = db.session.execute(
         db.select(Certificate).where(Certificate.name==request.form['name'])
     ).scalar_one_or_none()
-    if ec: return redirect(url_for(
-        'certificates.create',
-        messages=['name-taken'],
-    ))
+    if ec:
+        return redirect(url_for(
+            'certificates.create',
+            messages=['name-taken'],
+        ))
 
     c = Certificate()
     c.template_id = int(request.form['template_id'])
@@ -133,11 +136,12 @@ def update(id):
         Certificate.id!=id,
         Certificate.name==request.form['name']),
     )).scalar_one_or_none()
-    if ec: return redirect(url_for(
-        'certificates.edit',
-        id=id,
-        messages=['name-taken'],
-    ))
+    if ec:
+        return redirect(url_for(
+            'certificates.edit',
+            id=id,
+            messages=['name-taken'],
+        ))
 
     c = db.get_or_404(Certificate, id)
 

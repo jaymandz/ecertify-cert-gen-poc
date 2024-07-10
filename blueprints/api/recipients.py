@@ -1,7 +1,5 @@
 from flask import Blueprint
 
-from models import Recipient, db
-
 recipients_blueprint = Blueprint('recipients', __name__)
 
 def dict_from_scalar(s): return {

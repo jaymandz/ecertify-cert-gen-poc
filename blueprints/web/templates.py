@@ -1,5 +1,4 @@
 from flask import Blueprint, redirect, render_template, request, url_for
-from flask_sqlalchemy import SQLAlchemy
 
 from models import CertificateType, Template, db
 
