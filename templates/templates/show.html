@@ -52,7 +52,7 @@ let pageData = Alpine.reactive({
 let downloadTemplateContent = (event) => {
     let key = toastMaster.pushItem({
         loading: true,
-        message: 'Downloading template&hellip;',
+        content: 'Downloading template&hellip;',
     })
 
     pageData.isDownloadingTemplate = true

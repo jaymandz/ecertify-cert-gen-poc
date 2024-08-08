@@ -142,7 +142,7 @@
 <script type="text/javascript">
 toastMaster.pushItem({
     alertType: 'success',
-    message: 'The recipient was successfully deleted.',
+    content: 'The recipient was successfully deleted.',
 })
 </script>
 {% endif %}
@@ -151,7 +151,7 @@ toastMaster.pushItem({
 <script type="text/javascript">
 toastMaster.pushItem({
     alertType: 'success',
-    message: 'The recipients were successfully created from the CSV data.',
+    content: 'The recipients were successfully created from the CSV data.',
 })
 </script>
 {% endif %}
@@ -168,7 +168,7 @@ let createZip = (event) => {
 
     let key = toastMaster.pushItem({
         loading: true,
-        message: 'Downloading recipient copies and compiling them into a ZIP file&hellip;',
+        content: 'Downloading recipient copies and compiling them into a ZIP file&hellip;',
     })
 
     fetch("{{ url_for('api.certificates.show', id=certificate.id) }}")

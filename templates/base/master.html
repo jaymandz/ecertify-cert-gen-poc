@@ -97,7 +97,7 @@ let toastMaster = {
     <template x-if="item.body.loading">
         <span class="loading loading-infinity"></span>
     </template>
-    <div x-html="item.body.message"></div>
+    <div x-html="item.body.content"></div>
     <template x-if="! item.body.loading">
         <button class="btn btn-ghost btn-sm btn-square"
           @click="toastMaster.removeItem(item.key)">

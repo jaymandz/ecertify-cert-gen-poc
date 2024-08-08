@@ -141,7 +141,7 @@
 <script type="text/javascript">
 toastMaster.pushItem({
     alertType: 'warning',
-    message: 'The certificate name is already taken.',
+    content: 'The certificate name is already taken.',
 })
 </script>
 {% endif %}
@@ -181,7 +181,7 @@ pageData.fieldInfo = _.cloneDeep(pageData.currentFieldInfo)
 let loadCertificateTypeFields = (event) => {
     let key = toastMaster.pushItem({
         loading: true,
-        message: 'Loading template (and maybe fields too)&hellip;',
+        content: 'Loading template (and maybe fields too)&hellip;',
     })
 
     pageData.isLoadingFields = true
