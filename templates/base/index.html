@@ -75,6 +75,7 @@
 toastMaster.pushItem({
     alertType: 'success',
     content: 'The {{ nounSingular }} was successfully created.',
+    urlMessage: 'store-success',
 })
 </script>
 {% endif %}
@@ -84,6 +85,7 @@ toastMaster.pushItem({
 toastMaster.pushItem({
     alertType: 'success',
     content: 'The {{ nounSingular }} was successfully deleted.',
+    urlMessage: 'delete-success',
 })
 </script>
 {% endif %}
@@ -93,6 +95,7 @@ toastMaster.pushItem({
 toastMaster.pushItem({
     alertType: 'error',
     content: 'The {{ nounSingular }} could not be deleted. Other entities might still be using it.',
+    urlMessage: 'delete-failed',
 })
 </script>
 {% endif %}

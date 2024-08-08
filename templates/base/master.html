@@ -43,6 +43,16 @@ let toastMaster = {
     removeItem(key)
     {
         let index = this.items.findIndex(i => i.key == key)
+        let item = this.items[index]
+
+        if ('urlMessage' in item.body)
+        {
+            let url = window.location.href
+            url = url.replaceAll('messages='+item.body.urlMessage, '')
+              .replace('?&', '?').replace(/(\?|&)$/, '')
+            window.history.replaceState({}, '', url)
+        }
+
         this.items.splice(index, 1)
     },
 }
