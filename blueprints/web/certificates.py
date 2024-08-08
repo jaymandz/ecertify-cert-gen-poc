@@ -1,4 +1,9 @@
+import csv
+import io
 import re
+
+import random
+import string
 
 from flask import Blueprint, redirect, render_template, request, url_for
 from sqlalchemy import and_, func, or_
@@ -45,6 +50,16 @@ def update_fields(certificate):
             CertificateField.certificate_type_field.name == field_name[7:],
         )))
         cf.value = request.form[field_name]
+
+def generate_token():
+    # TODO: DRY this function
+    while True:
+        token = ''.join(random.choice(string.ascii_letters) for _ in range(13))
+        query = db.select(Recipient).where(Recipient.token==token)
+        if not db.session.execute(query).scalar_one_or_none():
+            break
+
+    return token
 
 @certificates_blueprint.get('/')
 def index():
@@ -201,8 +216,55 @@ def recipients_csv_upload(id):
 @certificates_blueprint.post('/<int:id>/csv')
 def recipients_csv_store(id):
     c = db.get_or_404(Certificate, id)
-    # TODO: Saving functionality
-    return redirect(url_for('certificates.show', id=c.id))
+
+    if request.files['file']:
+        stream = request.files['file'].stream
+        contents = stream.read().decode('utf-8')
+    else:
+        contents = request.form['text']
+
+    for row in csv.reader(io.StringIO(contents)):
+        r = Recipient()
+
+        r.token = generate_token()
+        r.certificate_id = c.id
+        r.last_name = row[0]
+        r.first_name = row[1]
+
+        try:
+            r.middle_name = row[2]
+        except IndexError:
+            r.middle_name = ''
+
+        try:
+            r.honorific = row[3]
+        except IndexError:
+            r.honorific = ''
+
+        try:
+            r.suffix = row[4]
+        except IndexError:
+            r.suffix = ''
+
+        try:
+            r.organization = row[5]
+        except IndexError:
+            r.organization = ''
+
+        try:
+            r.address = row[6]
+        except IndexError:
+            r.address = ''
+
+        db.session.add(r)
+
+    db.session.commit()
+
+    return redirect(url_for(
+        'certificates.show',
+        id=c.id,
+        messages=['csv-store-success'],
+    ))
 
 @certificates_blueprint.get('/<int:id>/batch')
 def recipients_batch_edit(id):
