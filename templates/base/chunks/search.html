@@ -1,7 +1,15 @@
+{% with %}
+{% set per_page = request.args.get('per_page')|int %}
 <form class="flex gap-x-1 items-center mb-4">
     <input class="input input-bordered w-full" name="q"
       placeholder="Search {{ nounPlural }} here." type="text"
       value="{{ request.args.get('q', '')}}">
+    <select class="select select-bordered" name="per_page">
+        <option{% if per_page == 10 %} selected{% endif %}>10</option>
+        <option{% if per_page == 25 %} selected{% endif %}>25</option>
+        <option{% if per_page == 50 %} selected{% endif %}>50</option>
+        <option{% if per_page == 100 %} selected{% endif %}>100</option>
+    </select>
     <button class="btn btn-square" type="submit">
         {% include 'heroicons/magnifying-glass.svg' %}
     </button>
@@ -9,3 +17,4 @@
         Clear
     </a>
 </form>
+{% endwith %}
