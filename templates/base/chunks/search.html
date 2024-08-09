@@ -4,7 +4,8 @@
     <input class="input input-bordered w-full" name="q"
       placeholder="Search {{ nounPlural }} here." type="text"
       value="{{ request.args.get('q', '')}}">
-    <select class="select select-bordered" name="per_page">
+    <select class="select select-bordered hidden sm:inline-flex"
+      name="per_page">
         <option{% if per_page == 10 %} selected{% endif %}>10</option>
         <option{% if per_page == 25 %} selected{% endif %}>25</option>
         <option{% if per_page == 50 %} selected{% endif %}>50</option>
