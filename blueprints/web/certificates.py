@@ -2,12 +2,10 @@ import csv
 import io
 import re
 
-import random
-import string
-
 from flask import Blueprint, redirect, render_template, request, url_for
 from sqlalchemy import and_, func, or_
 
+from helpers import generate_token
 from models import (
     Certificate,
     CertificateField,
@@ -50,16 +48,6 @@ def update_fields(certificate):
             CertificateField.certificate_type_field.name == field_name[7:],
         )))
         cf.value = request.form[field_name]
-
-def generate_token():
-    # TODO: DRY this function
-    while True:
-        token = ''.join(random.choice(string.ascii_letters) for _ in range(13))
-        query = db.select(Recipient).where(Recipient.token==token)
-        if not db.session.execute(query).scalar_one_or_none():
-            break
-
-    return token
 
 def get_recipient_by_token(token):
     return db.session.execute(

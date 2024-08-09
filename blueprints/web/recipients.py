@@ -1,8 +1,6 @@
 import base64
 import io
 import os
-import random
-import string
 
 from datetime import datetime
 from xml.dom.minidom import Text, parse
@@ -14,6 +12,7 @@ from flask import (
     Blueprint, Response, redirect, render_template, request, url_for
 )
 
+from helpers import generate_token
 from models import Certificate, Recipient, db
 
 load_dotenv(f'{os.path.dirname(__file__)}/.env')
@@ -82,15 +81,6 @@ def recipient_copy_svg_bytestr(recipient):
 def date_strftime(dv):
     date_format = '%B '+str(dv.day)+', %Y'
     return datetime.strptime(dv, '%Y-%m-%d').strftime(date_format)
-
-def generate_token():
-    while True:
-        token = ''.join(random.choice(string.ascii_letters) for _ in range(13))
-        query = db.select(Recipient).where(Recipient.token==token)
-        if not db.session.execute(query).scalar_one_or_none():
-            break
-
-    return token
 
 def issuance_date_strftime(d):
     ordinal = str(d.day)
