@@ -8,27 +8,118 @@
             {% include 'heroicons/arrow-uturn-left.svg' %}
         </a>
     </div>
-    <div class="tooltip tooltip-right" data-tip="Add a recipient">
+    <div class="tooltip tooltip-right hidden sm:inline-block"
+      data-tip="Add a recipient">
         <button class="btn btn-square" @click="addRecipient">
             {% include 'heroicons/plus.svg' %}
         </button>
     </div>
-    <div class="tooltip tooltip-right" data-tip="Save">
+    <div class="tooltip tooltip-right hidden sm:inline-block"
+      data-tip="Save">
         <button class="btn btn-square" form="batchForm" type="submit">
             {% include 'heroicons/check.svg' %}
         </button>
     </div>
 </div>
 
+<div class="alert alert-info sm:hidden">
+    Recipient batch management is not available on mobile.
+</div>
+
 <form action="{{ url_for('certificates.recipients_batch_update', id=certificate.id) }}"
-  class="flex flex-col space-y-2" id="batchForm" method="post">
+  class="bg-base-300 hidden overflow-y-auto rounded-box sm:block"
+  id="batchForm" method="post" style="height: calc(100vh - 160px)">
+<ul class="bg-base-300 menu rounded-box" x-data="{ rows: pageData.rows }">
+<template x-for="(row, index) in rows">
+<li>
+<div>
+    <input name="recipient-tokens" type="hidden" :value="row.token">
+    <input name="recipient-statuses" type="hidden" :value="row.status">
+    <input required name="recipient-last-names" placeholder="Last name"
+      type="text" :class="inputClass(row)" :value="row.lastName">
+    <input required name="recipient-first-names" placeholder="First name"
+      type="text" :class="inputClass(row)" :value="row.firstName">
+    <input name="recipient-middle-names" placeholder="Middle name"
+      type="text" :class="inputClass(row)" :value="row.middleName">
+    <input name="recipient-honorifics" placeholder="Honorific"
+      type="text" :class="inputClass(row)" :value="row.honorific">
+    <input name="recipient-suffixes" placeholder="Suffix"
+      type="text" :class="inputClass(row)" :value="row.suffix">
+    <input name="recipient-organizations" placeholder="Organization"
+      type="text" :class="inputClass(row)" :value="row.organization">
+    <input name="recipient-addresses" placeholder="Address"
+      type="text" :class="inputClass(row)" :value="row.address">
+
+    <template x-if="row.status == 'to-add'">
+        <button class="btn btn-square" @click="removeRecipient($event, index)">
+            {% include 'heroicons/x-mark.svg' %}
+        </button>
+    </template>
+    <template x-if="row.status == 'to-edit'">
+        <button class="btn btn-square" type="button"
+          @click="row.status = 'to-delete'">
+            {% include 'heroicons/trash.svg' %}
+        </button>
+    </template>
+    <template x-if="row.status == 'to-delete'">
+        <button class="btn btn-square" type="button"
+          @click="row.status = 'to-edit'">
+            {% include 'heroicons/no-symbol.svg' %}
+        </button>
+    </template>
+</div>
+</li>
+</template>
+</ul>
 </form>
 {% endblock content %}
 
 {% block scripts %}
 <script type="text/javascript">
+let pageData = Alpine.reactive({
+    rows: [
+        {% for recipient in certificate.recipients %}
+        {
+            token: '{{ recipient.token }}',
+            status: 'to-edit',
+            lastName: '{{ recipient.last_name }}',
+            firstName: '{{ recipient.first_name }}',
+            middleName: '{{ recipient.middle_name }}',
+            honorific: '{{ recipient.honorific }}',
+            suffix: '{{ recipient.suffix }}',
+            organization: '{{ recipient.organization }}',
+            address: '{{ recipient.address }}',
+        },
+        {% endfor %}
+    ],
+})
+
 let addRecipient = (event) => {
-    //
+    pageData.rows.push({
+        token: '',
+        status: 'to-add',
+        lastName: '',
+        firstName: '',
+        middleName: '',
+        honorific: '',
+        suffix: '',
+        organization: '',
+        address: '',
+    })
+}
+
+let inputClass = (row) => {
+    let classes = ['input']
+    if (row.status == 'to-delete') classes.push('input-ghost')
+    return classes.join(' ')
+}
+
+let markRecipientForDeletion = (event, index) => {
+    pageData.rows[index].status = 'to-delete'
+}
+
+let removeRecipient = (event, index) => {
+    pageData.rows.splice(index, 1)
 }
 </script>
 {% endblock scripts %}

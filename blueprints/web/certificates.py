@@ -61,6 +61,14 @@ def generate_token():
 
     return token
 
+def get_recipient_by_token(token):
+    return db.session.execute(
+        db.select(Recipient).where(Recipient.token == token)
+    ).scalar_one()
+
+def delete_recipient_by_token(token):
+    db.session.delete(get_recipient_by_token(token))
+
 @certificates_blueprint.get('/')
 def index():
     collection = db.select(Certificate).where(
@@ -278,4 +286,43 @@ def recipients_batch_edit(id):
 @certificates_blueprint.post('/<int:id>/batch')
 def recipients_batch_update(id):
     c = db.get_or_404(Certificate, id)
-    return redirect(url_for('certificates.show', id=c.id))
+
+    recipient_tokens = request.form.getlist('recipient-tokens')
+    recipient_statuses = request.form.getlist('recipient-statuses')
+    recipient_last_names = request.form.getlist('recipient-last-names')
+    recipient_first_names = request.form.getlist('recipient-first-names')
+    recipient_middle_names = request.form.getlist('recipient-middle-names')
+    recipient_honorifics = request.form.getlist('recipient-honorifics')
+    recipient_suffixes = request.form.getlist('recipient-suffixes')
+    recipient_organizations = request.form.getlist('recipient-organizations')
+    recipient_addresses = request.form.getlist('recipient-addresses')
+
+    def assign_values_to_recipient(recipient, i):
+        recipient.last_name = recipient_last_names[i]
+        recipient.first_name = recipient_first_names[i]
+        recipient.middle_name = recipient_middle_names[i]
+        recipient.honorific = recipient_honorifics[i]
+        recipient.suffix = recipient_suffixes[i]
+        recipient.organization = recipient_organizations[i]
+        recipient.address = recipient_addresses[i]
+
+    for i, status in enumerate(recipient_statuses):
+        if status == 'to-add':
+            recipient = Recipient()
+            recipient.token = generate_token()
+            recipient.certificate_id = c.id
+            assign_values_to_recipient(recipient, i)
+            db.session.add(recipient)
+        elif status == 'to-edit':
+            recipient = get_recipient_by_token(recipient_tokens[i])
+            assign_values_to_recipient(recipient, i)
+        elif status == 'to-delete':
+            delete_recipient_by_token(recipient_tokens[i])
+
+    db.session.commit()
+
+    return redirect(url_for(
+        'certificates.show',
+        id=c.id,
+        messages=['recipient-batch-manage-success'],
+    ))

@@ -158,6 +158,16 @@ toastMaster.pushItem({
 </script>
 {% endif %}
 
+{% if 'recipient-batch-manage-success' in messages %}
+<script type="text/javascript">
+toastMaster.pushItem({
+    alertType: 'success',
+    content: 'The batch of recipients was successfully managed.',
+    urlMessage: 'recipient-batch-manage-success',
+})
+</script>
+{% endif %}
+
 <script type="text/javascript">
 let dbToHumanFriendlyDate = (dbDate) => {
     return luxon.DateTime.fromISO(dbDate).toLocaleString(
